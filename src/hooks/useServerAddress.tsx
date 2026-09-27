@@ -13,7 +13,7 @@ interface ServerAddressContextType {
     servers: ServerConfig[];
     loaded: boolean;
     updateServerConfig: (id: string, name: string, description: string, address: string) => void;
-    addServerConfig: (name: string, description: string, address: string) => void;
+    addServerConfig: (name: string, description: string, address: string) => string;
     deleteServerConfig: (id: string) => void;
     getServerById: (id: string) => ServerConfig | undefined;
     getServerApiKey: (id: string) => Promise<string>;
@@ -79,9 +79,10 @@ export function ServerAddressProvider({ children }: { children: React.ReactNode 
         save(servers.map((srv) => srv.id === id ? { ...srv, name, description, address } : srv));
     };
 
-    const addServerConfig = (name: string, description: string, address: string ) => {
+    const addServerConfig = (name: string, description: string, address: string): string => {
         const newId = `Server_${Date.now()}`;
         save([...servers, { id: newId, name, description, address }]);
+        return newId;
     };
 
     const deleteServerConfig = (id: string) => {

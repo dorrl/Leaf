@@ -1,50 +1,15 @@
 import { Colors } from '@/constants/Colors';
+import { BackButton } from '@/components/BackButton';
+import { ConfirmModal } from '@/components/ConfirmModal';
+import { FormField } from '@/components/FormField';
 import { ServerConfig, useServerAddress } from '@/hooks/useServerAddress';
 import { useTheme } from '@/hooks/useTheme';
 import { clearServerSnapshot } from '@/utils/localData';
-import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Animated, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 type RuntimeSettings = { measurementIntervalMinutes: number; syncIntervalMinutes: number; retentionMonths: number };
-
-function ConfirmModal({ visible, title, message, onCancel, onConfirm, c }: {
-    visible: boolean;
-    title: string;
-    message: string;
-    onCancel: () => void;
-    onConfirm: () => void;
-    c: typeof Colors.dark;
-}) {
-    const opacity = useRef(new Animated.Value(0)).current;
-
-    useEffect(() => {
-        if (visible) {
-            opacity.setValue(0);
-            Animated.timing(opacity, { toValue: 1, duration: 120, useNativeDriver: true }).start();
-        }
-    }, [opacity, visible]);
-
-    return <Modal visible={visible} transparent animationType="none" onRequestClose={onCancel}>
-        <Animated.View style={[styles.modalBackdrop, { opacity }]}>
-            <Pressable style={styles.modalBackdropPressable} onPress={onCancel}>
-                <Pressable style={[styles.modalCard, { backgroundColor: c.main.cover }]} onPress={event => event.stopPropagation()}>
-                    <Text style={[styles.modalTitle, { color: c.main.text }]}>{title}</Text>
-                    <Text style={[styles.modalMessage, { color: c.subText }]}>{message}</Text>
-                    <View style={styles.modalActions}>
-                        <Pressable onPress={onCancel} style={[styles.modalButton, { borderColor: c.main.outline }]}>
-                            <Text style={[styles.modalCancelText, { color: c.main.text }]}>취소</Text>
-                        </Pressable>
-                        <Pressable onPress={onConfirm} style={[styles.modalButton, { backgroundColor: c.red.text }]}>
-                            <Text style={styles.modalConfirmText}>삭제</Text>
-                        </Pressable>
-                    </View>
-                </Pressable>
-            </Pressable>
-        </Animated.View>
-    </Modal>;
-}
 
 function ServerRuntimeSettings({ server, wide, c }: { server: ServerConfig; wide: number; c: typeof Colors.dark }) {
     const { getServerApiKey } = useServerAddress();
@@ -108,10 +73,8 @@ function ServerRuntimeSettings({ server, wide, c }: { server: ServerConfig; wide
         {loading ? <ActivityIndicator color={c.accent} style={{ marginBottom: wide * 4 }} /> : <>
             <Text style={[styles.label, { color: c.subText, fontSize: wide * 3 }]}>센서 측정 주기</Text>
             <Text style={[styles.fixedValue, { color: c.sub.text, borderColor: c.main.outline }]}>1분마다 측정</Text>
-            <Text style={[styles.label, { color: c.subText, fontSize: wide * 3 }]}>서버 저장·앱 갱신 주기 (분)</Text>
-            <TextInput style={[styles.input, { color: c.main.text, borderColor: c.main.outline }]} value={String(settings.syncIntervalMinutes)} keyboardType="number-pad" onChangeText={value => setSettings(current => ({ ...current, syncIntervalMinutes: Number(value) }))} />
-            <Text style={[styles.label, { color: c.subText, fontSize: wide * 3 }]}>측정값 보관 기간 (개월)</Text>
-            <TextInput style={[styles.input, { color: c.main.text, borderColor: c.main.outline }]} value={String(settings.retentionMonths)} keyboardType="number-pad" onChangeText={value => setSettings(current => ({ ...current, retentionMonths: Number(value) }))} />
+            <FormField label="서버 저장·앱 갱신 주기 (분)" value={String(settings.syncIntervalMinutes)} onChangeText={value => setSettings(current => ({ ...current, syncIntervalMinutes: Number(value) }))} textColor={c.main.text} borderColor={c.main.outline} labelColor={c.subText} keyboardType="number-pad" />
+            <FormField label="측정값 보관 기간 (개월)" value={String(settings.retentionMonths)} onChangeText={value => setSettings(current => ({ ...current, retentionMonths: Number(value) }))} textColor={c.main.text} borderColor={c.main.outline} labelColor={c.subText} keyboardType="number-pad" />
             <Pressable onPress={save} disabled={saving} style={[styles.saveButton, saving ? styles.disabled : {}, { backgroundColor: c.accent }]}>
                 <Text style={styles.saveText}>{saving ? '저장 중...' : '서버 설정 저장'}</Text>
             </Pressable>
@@ -127,30 +90,35 @@ function ServerRuntimeSettings({ server, wide, c }: { server: ServerConfig; wide
 function ServerAddressForm({ server, wide, c }: { server: ServerConfig; wide: number; c: typeof Colors.dark }) {
     const { updateServerConfig, getServerApiKey, setServerApiKey } = useServerAddress();
     const [name, setName] = useState(server.name); const [description, setDescription] = useState(server.description); const [address, setAddress] = useState(server.address); const [apiKey, setApiKey] = useState(''); const [saving, setSaving] = useState(false);
-    useEffect(() => { setName(server.name); setDescription(server.description); setAddress(server.address); void getServerApiKey(server.id).then(setApiKey); }, [server, getServerApiKey]);
+    const [message, setMessage] = useState('');
+    useEffect(() => { void getServerApiKey(server.id).then(setApiKey); }, [server.id, getServerApiKey]);
     const disabled: boolean = 
-        (server.name == name.trim() && server.description == description.trim() && server.address == address.trim().replace(/\/$/, '')) ||
-        name.trim() == '' || address.trim().replace(/\/$/, '') == ''
+        saving || ((server.name === name.trim() && server.description === description.trim() && server.address === address.trim().replace(/\/$/, '')) && !message) ||
+        name.trim() === '' || address.trim().replace(/\/$/, '') === ''
     return (
         <View>
             <Text style={[styles.label, { color: c.subText, fontSize: wide * 3 }]}>서버 id</Text>
             <Text style={[styles.fixedValue, { color: c.sub.text, borderColor: c.main.outline }]}>{server.id}</Text>
-            <Text style={[styles.label, { color: c.subText, fontSize: wide * 3 }]}>이름</Text>
-            <TextInput style={[styles.input, { color: c.main.text, borderColor: name ? c.main.outline : c.red.outline }]} value={name} onChangeText={setName} placeholder="(필수)" placeholderTextColor={c.red.outline} />
-            <Text style={[styles.label, { color: c.subText, fontSize: wide * 3 }]}>설명</Text>
-            <TextInput style={[styles.input, { color: c.main.text, borderColor: c.main.outline }]} value={description} onChangeText={setDescription}/>
-            <Text style={[styles.label, { color: c.subText, fontSize: wide * 3 }]}>주소</Text>
-            <TextInput style={[styles.input, { color: c.main.text, borderColor: address ? c.main.outline : c.red.outline }]} value={address} onChangeText={setAddress} placeholder="(필수)" placeholderTextColor={c.red.outline} autoCapitalize="none" />
-            <Text style={[styles.label, { color: c.subText, fontSize: wide * 3 }]}>서버 API 키</Text>
-            <TextInput style={[styles.input, { color: c.main.text, borderColor: c.main.outline }]} value={apiKey} onChangeText={setApiKey} placeholder="(설정 변경·삭제용)" placeholderTextColor={c.subText} secureTextEntry autoCapitalize="none" />
+            <FormField label="이름" value={name} onChangeText={setName} textColor={c.main.text} borderColor={name ? c.main.outline : c.red.outline} labelColor={c.subText} placeholder="(필수)" placeholderColor={c.red.outline} />
+            <FormField label="설명" value={description} onChangeText={setDescription} textColor={c.main.text} borderColor={c.main.outline} labelColor={c.subText} />
+            <FormField label="주소" value={address} onChangeText={setAddress} textColor={c.main.text} borderColor={address ? c.main.outline : c.red.outline} labelColor={c.subText} placeholder="(필수)" placeholderColor={c.red.outline} autoCapitalize="none" />
+            <FormField label="서버 API 키" value={apiKey} onChangeText={setApiKey} textColor={c.main.text} borderColor={c.main.outline} labelColor={c.subText} placeholder="(설정 변경·삭제용)" placeholderColor={c.subText} secureTextEntry autoCapitalize="none" />
             <Pressable style={[styles.saveButton, disabled ? styles.disabled : {}, { backgroundColor: c.accent }]} disabled={disabled}
             onPress={async () => {
-                setSaving(true)
-                updateServerConfig(server.id, name.trim(), description.trim(), address.trim().replace(/\/$/, ''));
-                void setServerApiKey(server.id, apiKey.trim()); 
-                setSaving(false)
+                setSaving(true);
+                setMessage('');
+                try {
+                    updateServerConfig(server.id, name.trim(), description.trim(), address.trim().replace(/\/$/, ''));
+                    await setServerApiKey(server.id, apiKey.trim());
+                    setMessage('연결 정보가 저장되었습니다.');
+                } catch {
+                    setMessage('저장하지 못했습니다. 다시 시도하세요.');
+                } finally {
+                    setSaving(false);
+                }
             }}
-            ><Text style={styles.saveText}>서버 연결 정보 저장</Text></Pressable>
+            ><Text style={styles.saveText}>{saving ? '저장 중...' : '서버 연결 정보 저장'}</Text></Pressable>
+            {!!message && <Text style={{ color: c.subText, fontFamily: 'Pretendard-Regular', fontSize: wide * 2.7, marginTop: wide * 2 }}>{message}</Text>}
         </View>
     );
 }
@@ -160,8 +128,8 @@ export default function ServerSetting() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const router = useRouter();
     const { width, height } = useWindowDimensions(); const wide = Math.min(width, height) * 0.01;
-    const { isDark, toggleTheme } = useTheme(); const c = isDark ? Colors.dark : Colors.light;
-    const { servers, deleteServerConfig } = useServerAddress();
+    const { isDark } = useTheme(); const c = isDark ? Colors.dark : Colors.light;
+    const { deleteServerConfig } = useServerAddress();
     const server = getServerById(id) as ServerConfig
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -176,10 +144,7 @@ export default function ServerSetting() {
     return (
         <ScrollView style={{ flex: 1, backgroundColor: c.background }} contentContainerStyle={{ padding: wide * 5, paddingBottom: wide * 22 }}>
             <View style={{ paddingTop: wide * 3}}>
-                <Pressable onPress={() => router.back()}
-                    style={[styles.headerIcon, { backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : '#FFFFFF' }]}>
-                    <Ionicons name="chevron-back" size={wide * 5} color={c.main.text} />
-                </Pressable>
+                <BackButton onPress={() => router.back()} color={c.main.text} backgroundColor={isDark ? 'rgba(255,255,255,0.04)' : '#FFFFFF'} />
             </View>
             <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: wide * 7, color: c.main.text, marginTop: wide * 2 }}>{server.name} 설정</Text>
             <Text style={[styles.heading, { color: c.subText, marginTop: wide * 3 }]}>센서 및 데이터 보관</Text>
@@ -196,19 +161,14 @@ export default function ServerSetting() {
             <Pressable onPress={() => setShowDeleteModal(true)} style={[styles.deleteButton, { backgroundColor: c.red.text }]}>
                 <Text>서버 삭제</Text>
             </Pressable>
-            <ConfirmModal visible={showDeleteModal} title="서버 삭제" message={`${server.name} 서버를 삭제하시겠습니까? 저장된 연결 정보도 이 기기에서 삭제됩니다.`} onCancel={() => setShowDeleteModal(false)} onConfirm={deleteServer} c={c} />
+            <ConfirmModal visible={showDeleteModal} title="서버 삭제" message={`${server.name} 서버를 삭제하시겠습니까? 저장된 연결 정보도 이 기기에서 삭제됩니다.`} confirmLabel="삭제" destructive onCancel={() => setShowDeleteModal(false)} onConfirm={deleteServer} c={c} />
         </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     header: { flexDirection: 'row', alignItems: 'center' },
-    headerIcon: {
-        width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center',
-        shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.02, shadowRadius: 3, elevation: 1.5,
-    },
     card: { borderWidth: 1, borderRadius: 16, marginBottom: 12 }, heading: { fontFamily: 'Pretendard-SemiBold', fontSize: 14, marginBottom: 10 },
-    modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }, modalBackdropPressable: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 }, modalCard: { width: '100%', maxWidth: 380, borderRadius: 16, padding: 20 }, modalTitle: { fontFamily: 'Pretendard-Bold', fontSize: 18, marginBottom: 10 }, modalMessage: { fontFamily: 'Pretendard-Regular', fontSize: 14, lineHeight: 21 }, modalActions: { flexDirection: 'row', gap: 10, marginTop: 20 }, modalButton: { flex: 1, alignItems: 'center', borderWidth: 1, borderRadius: 8, paddingVertical: 11 }, modalCancelText: { fontFamily: 'Pretendard-SemiBold' }, modalConfirmText: { color: '#FFFFFF', fontFamily: 'Pretendard-Bold' },
     label: { fontFamily: 'Pretendard-Regular', marginTop: 12, marginBottom: 5 }, input: { fontFamily: 'Pretendard-Medium', borderWidth: 1, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8 },
     saveButton: { alignItems: 'center', borderRadius: 8, paddingVertical: 10, marginTop: 12 }, saveText: { color: '#FFFFFF', fontFamily: 'Pretendard-Bold' }, fixedValue: { fontFamily: 'Pretendard-Medium', borderWidth: 1, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 10 },
     deleteButton: { alignItems: 'center', borderRadius: 8, paddingVertical: 10, marginTop: 10, borderWidth: 1 }, deleteText: { fontFamily: 'Pretendard-Bold' }, guide: { fontFamily: 'Pretendard-Regular', fontSize: 13, lineHeight: 20, marginBottom: 8 },

@@ -1,8 +1,10 @@
 import { Colors } from '@/constants/Colors';
 import { useServerAddress } from '@/hooks/useServerAddress';
 import { useTheme } from '@/hooks/useTheme';
+import type { PicoStatus } from '@/types/pico';
 import { formatSensorValue } from '@/utils/formatSensorValue';
 import { loadServerSnapshot, saveServerSnapshot } from '@/utils/localData';
+import { getPicoStatus } from '@/utils/pico';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -10,8 +12,6 @@ import { ActivityIndicator, Modal, Pressable, RefreshControl, ScrollView, StyleS
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-
-type PicoStatus = 'normal' | 'wrong' | 'disconnected';
 
 interface Pico {
     name: string;
@@ -289,12 +289,11 @@ export default function Index() {
                     const syncIntervalMinutes = Number(serverSettings?.settings?.syncIntervalMinutes) || 5;
 
                     const picosList: Pico[] = (data.pico || []).map((p: any) => {
-                        let status: PicoStatus = 'normal';
-                        if (!p.connected) {
-                            status = 'disconnected';
-                        } else if (p.state.temperature > 30 || p.state.temperature < 15 || p.state.moisture < 30) {
-                            status = 'wrong';
-                        }
+                        const status = getPicoStatus({
+                            connected: p.connected,
+                            temperature: p.state.temperature,
+                            moisture: p.state.moisture,
+                        });
                         return {
                             name: p.name || p.id,
                             temp: p.state.temperature,

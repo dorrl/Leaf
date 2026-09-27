@@ -18,7 +18,7 @@ export default function Settings() {
         <View style={[styles.card, { backgroundColor: c.main.cover, borderColor: c.main.outline, padding: wide * 4 }]}>
             <Text style={{ color: c.main.text, fontFamily: 'Pretendard-Bold', fontSize: wide * 5 }}>Credit</Text>
             <Text style={[styles.guide, { color: c.subText }]}>제작: ITEC tech</Text>
-            <Text style={[styles.guide, { color: c.subText }]}>temp</Text>
+            <Text style={[styles.guide, { color: c.subText }]}>언젠간 배포</Text>
             <Text style={[styles.guide, { color: c.subText }]}>아 힘들다</Text>
         </View>
     </ScrollView>;

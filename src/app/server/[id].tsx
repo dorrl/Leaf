@@ -1,17 +1,16 @@
 import { Colors } from '@/constants/Colors';
 import { useServerAddress } from '@/hooks/useServerAddress';
 import { useTheme } from '@/hooks/useTheme';
+import type { PicoReading, PicoReadingsResponse, PicoStatus } from '@/types/pico';
 import { formatSensorValue } from '@/utils/formatSensorValue';
 import { loadServerSnapshot, saveServerSnapshot } from '@/utils/localData';
+import { getPicoStatus } from '@/utils/pico';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-
-type PicoStatus = 'normal' | 'wrong' | 'disconnected';
 
 interface Pico {
     id?: string;
@@ -26,38 +25,16 @@ interface Pico {
 
 type FilterType = 'normal' | 'all' | 'wrong';
 
-// ─── User Specified API response types ────────────────────────────────────────
+export type { PicoState } from '@/types/pico';
+export type PicoType = PicoReading;
+export type Respond = PicoReadingsResponse;
 
-export type PicoState = {
-    temperature: number;
-    moisture: number;
-    light: number;
-}
-
-export type PicoType = {
-    name: string;
-    id: string;
-    connected: boolean;
-    state: PicoState;
-    receivedAt?: string;
-}
-
-export type Respond = {
-    state: number;
-    source?: 'latest-received';
-    servedAt?: string;
-    pico: PicoType[];
-}
-
-function normalizePico(raw: PicoType): Pico {
-    let status: PicoStatus = 'normal';
-    if (!raw.connected) {
-        status = 'disconnected';
-    } else {
-        if (raw.state.temperature > 30 || raw.state.temperature < 15 || raw.state.moisture < 30) {
-            status = 'wrong';
-        }
-    }
+function normalizePico(raw: PicoReading): Pico {
+    const status = getPicoStatus({
+        connected: raw.connected,
+        temperature: raw.state.temperature,
+        moisture: raw.state.moisture,
+    });
 
     return {
         id: raw.id,
@@ -91,17 +68,9 @@ function GaugeBar({ label, value, max, color, wide, isDark, unit }: {
     );
 }
 
-function LargePicoCard({ pico, wide, isDark }: { pico: Pico; wide: number; isDark: boolean }) {
+function LargePicoCard({ pico, serverId, wide, isDark }: { pico: Pico; serverId: string; wide: number; isDark: boolean }) {
     const c = isDark ? Colors.dark : Colors.light;
-    const scale = useSharedValue(1);
-
-    const pressHandler = () => {
-        scale.value = withSpring(0.97, { damping: 15 }, () => {
-            scale.value = withSpring(1, { damping: 15 });
-        });
-    };
-
-    const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+    const router = useRouter();
 
     let cardBg = isDark ? 'rgba(255,255,255,0.03)' : '#FFFFFF';
     let borderColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)';
@@ -130,8 +99,13 @@ function LargePicoCard({ pico, wide, isDark }: { pico: Pico; wide: number; isDar
     const lightVal = pico.light ?? 0;
 
     return (
-        <Pressable onPress={pressHandler} style={{ width: '48%', marginBottom: wide * 4 }}>
-            <Animated.View style={[animStyle, styles.largePico, {
+        <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`${pico.name} 상세 보기`}
+            onPress={() => router.push({ pathname: '/server/[id]/[pico]', params: { id: serverId, pico: pico.id ?? pico.name } })}
+            style={{ width: '48%', marginBottom: wide * 4 }}
+        >
+            <View style={[styles.largePico, {
                 backgroundColor: cardBg, borderColor, borderRadius: wide * 4.5,
                 padding: wide * 4, borderWidth: 1, minHeight: wide * 52,
                 shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: wide * 2, elevation: 1.5,
@@ -143,26 +117,13 @@ function LargePicoCard({ pico, wide, isDark }: { pico: Pico; wide: number; isDar
                     </View>
                 </View>
 
-                {pico.status !== 'disconnected' && pico.temp != null && pico.humidity != null ? (
+                {pico.status !== 'disconnected' && pico.temp != null && pico.humidity != null ? <>
                     <View style={{ flex: 1 }}>
                         <GaugeBar label="온도" value={pico.temp} max={pico.tempMax || 35} color={tempColor} wide={wide} isDark={isDark} />
                         <GaugeBar label="습도" value={pico.humidity} max={pico.humidityMax || 100} color={humidColor} wide={wide} isDark={isDark} />
                         <GaugeBar label="조도" value={lightVal} max={1000} color={lightColor} wide={wide} isDark={isDark} unit=" lx" />
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: wide * 1.5, paddingTop: wide * 2, borderTopWidth: 1, borderTopColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' }}>
-                            <View style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                backgroundColor: isDark ? 'rgba(251, 191, 36, 0.12)' : 'rgba(217, 119, 6, 0.08)',
-                                paddingHorizontal: wide * 2,
-                                paddingVertical: wide * 1,
-                                borderRadius: wide * 2,
-                            }}>
-                                <Ionicons name="sunny" size={wide * 3.2} color={lightColor} />
-                                <Text style={{ fontSize: wide * 2.6, fontFamily: 'Pretendard-Bold', color: lightColor, marginLeft: wide * 1 }}>{formatSensorValue(lightVal)} lx</Text>
-                            </View>
-                        </View>
                     </View>
-                ) : (
+                </> : <>
                     <View style={[styles.centerAlign, { flex: 1, justifyContent: 'center' }]}>
                         <View style={[styles.offlineCircle, { backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC' }]}>
                             <Ionicons name="cloud-offline-outline" size={wide * 6} color={isDark ? '#475569' : '#94A3B8'} />
@@ -171,8 +132,8 @@ function LargePicoCard({ pico, wide, isDark }: { pico: Pico; wide: number; isDar
                             네트워크 연결 끊김
                         </Text>
                     </View>
-                )}
-            </Animated.View>
+                </>}
+            </View>
         </Pressable>
     );
 }
@@ -187,8 +148,8 @@ export default function ServerDetail() {
     const { width, height } = useWindowDimensions();
     const wide = Math.min(width, height) * 0.01;
 
-    const { servers, getServerById } = useServerAddress();
-    const serverConfig = servers.find(s => s.id === id) || servers[0];
+    const { servers, loaded } = useServerAddress();
+    const serverConfig = servers.find(s => s.id === id);
 
     const [filter, setFilter] = useState<FilterType>('all');
     const [picos, setPicos] = useState<Pico[]>([]);
@@ -196,8 +157,6 @@ export default function ServerDetail() {
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [pollIntervalMinutes, setPollIntervalMinutes] = useState(5);
-
-    if (getServerById(id) === undefined) return
 
     const fetchState = useCallback(async () => {
         if (!serverConfig) return;
@@ -231,14 +190,19 @@ export default function ServerDetail() {
     }, [serverConfig]);
 
     useEffect(() => {
-        setLoading(true);
-        fetchState();
-    }, [fetchState]);
+        if (!serverConfig) return;
+        let active = true;
+        void Promise.resolve().then(() => {
+            if (active) void fetchState();
+        });
+        return () => { active = false; };
+    }, [fetchState, serverConfig]);
 
     useEffect(() => {
+        if (!serverConfig) return;
         const timer = setInterval(() => { void fetchState(); }, pollIntervalMinutes * 60_000);
         return () => clearInterval(timer);
-    }, [fetchState, pollIntervalMinutes]);
+    }, [fetchState, pollIntervalMinutes, serverConfig]);
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -246,6 +210,14 @@ export default function ServerDetail() {
     };
 
     const filteredPicos = picos.filter(p => filter === 'all' || p.status === filter);
+
+    if (!serverConfig) {
+        return (
+            <View style={[styles.container, styles.centerAlign, { backgroundColor: c.background, justifyContent: 'center' }]}>
+                {loaded ? <Text style={{ color: c.subText }}>서버 정보를 찾을 수 없습니다.</Text> : <ActivityIndicator color={c.accent} />}
+            </View>
+        );
+    }
 
     return (
         <View style={[styles.container, { backgroundColor: c.background }]}>
@@ -337,7 +309,7 @@ export default function ServerDetail() {
                         {/* Pico Cards Grid */}
                         <View style={styles.gridContainer}>
                             {filteredPicos.map((pico, idx) => (
-                                <LargePicoCard key={idx} pico={pico} wide={wide} isDark={isDark} />
+                                <LargePicoCard key={idx} pico={pico} serverId={serverConfig.id} wide={wide} isDark={isDark} />
                             ))}
                         </View>
                     </>
