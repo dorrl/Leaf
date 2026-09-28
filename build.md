@@ -1,11 +1,14 @@
 before building
 ```powershell
 npx expo prebuild
-cd android```
+cd android
+```
 
 debug (convert to .apk)
 ```powershell
-./gradlew assembleDebug```
+./gradlew assembleDebug
+```
 release (convert to .aab)
 ```powershell
-./gradlew assembleRelease```
+./gradlew assembleRelease
+```
