@@ -14,7 +14,7 @@ export default function RootLayout() {
         'Pretendard-Light': require('../../assets/fonts/Pretendard/Light.otf'),
         'Pretendard-Regular': require('../../assets/fonts/Pretendard/Regular.otf'),
         'Pretendard-Medium': require('../../assets/fonts/Pretendard/Medium.otf'),
-        'Pretendard-SemiBold': require('../../assets/fonts/Pretendard/SemiBold.otf'),
+        'Pretendard-SemiBold': require('../../assets/fonts/Pretendard/Semibold.otf'),
         'Pretendard-Bold': require('../../assets/fonts/Pretendard/Bold.otf'),
         'Pretendard-ExtraBold': require('../../assets/fonts/Pretendard/ExtraBold.otf'),
         'Pretendard-Black': require('../../assets/fonts/Pretendard/Black.otf'),
