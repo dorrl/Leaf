@@ -4,11 +4,18 @@ export type PicoState = {
     light: number;
 };
 
+export type PicoOptimalRange = {
+    temperature: { min: number; max: number };
+    moisture: { min: number; max: number };
+    light: { min: number; max: number; minDurationHours: number; maxDurationHours: number };
+};
+
 export type PicoReading = {
     name: string;
     id: string;
     connected: boolean;
     state: PicoState;
+    optimalRange?: PicoOptimalRange;
     receivedAt?: string;
 };
 

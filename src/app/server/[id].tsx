@@ -34,7 +34,9 @@ function normalizePico(raw: PicoReading): Pico {
         connected: raw.connected,
         temperature: raw.state.temperature,
         moisture: raw.state.moisture,
-    });
+        light: raw.state.light,
+        at: raw.receivedAt ? Date.parse(raw.receivedAt) : null,
+    }, raw.optimalRange);
 
     return {
         id: raw.id,

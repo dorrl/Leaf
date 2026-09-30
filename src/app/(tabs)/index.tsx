@@ -293,7 +293,9 @@ export default function Index() {
                             connected: p.connected,
                             temperature: p.state.temperature,
                             moisture: p.state.moisture,
-                        });
+                            light: p.state.light,
+                            at: p.receivedAt ? Date.parse(p.receivedAt) : null,
+                        }, p.optimalRange);
                         return {
                             name: p.name || p.id,
                             temp: p.state.temperature,
@@ -319,7 +321,13 @@ export default function Index() {
                         temp: p.state?.temperature,
                         humidity: p.state?.moisture,
                         light: p.state?.light,
-                        status: !p.connected ? 'disconnected' : (p.state?.temperature > 30 || p.state?.temperature < 15 || p.state?.moisture < 30) ? 'wrong' : 'normal',
+                        status: getPicoStatus({
+                            connected: p.connected,
+                            temperature: p.state?.temperature,
+                            moisture: p.state?.moisture,
+                            light: p.state?.light,
+                            at: p.receivedAt ? Date.parse(p.receivedAt) : null,
+                        }, p.optimalRange),
                     }));
                     return {
                         id: srv.id,

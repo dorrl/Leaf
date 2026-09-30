@@ -1,9 +1,10 @@
+import { ConfirmModal } from '@/components/ConfirmModal';
 import { Colors } from '@/constants/Colors';
 import { useServerAddress } from '@/hooks/useServerAddress';
 import { useTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 type NotificationItem = { id: string; type: 'warning' | 'info' | 'error'; message: string; picoId: string; createdAt: string; resolved: boolean };
@@ -34,10 +35,12 @@ export default function Notifications() {
     const wide = Math.min(width, height) * 0.01;
     const { isDark } = useTheme();
     const c = isDark ? Colors.dark : Colors.light;
-    const { servers } = useServerAddress();
+    const { servers, getServerApiKey } = useServerAddress();
     const [items, setItems] = useState<NotificationItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     const load = useCallback(async () => {
         const responses = await Promise.all(servers.map(async server => {
@@ -54,9 +57,55 @@ export default function Notifications() {
         setRefreshing(false);
     }, [servers]);
 
+    const deleteNotifications = async () => {
+        setDeleteModalVisible(false);
+        setDeleting(true);
+        try {
+            await Promise.all(servers.map(async server => {
+                try {
+                    const apiKey = await getServerApiKey(server.id);
+                    if (!apiKey) return;
+                    const address = server.address.trim();
+                    const base = address.startsWith('http') ? address : `http://${address}`;
+                    await fetch(`${base.replace(/\/+$/, '')}/notifications/delete`, {
+                        method: 'DELETE',
+                        headers: { Accept: 'application/json', 'X-API-Key': apiKey },
+                    });
+                } catch {
+                    // A failed server should not block deletion requests to other servers.
+                }
+            }));
+            await load();
+        } finally {
+            setDeleting(false);
+        }
+    };
+
     useEffect(() => { void load(); }, [load]);
     return <ScrollView style={{ flex: 1, backgroundColor: c.background }} contentContainerStyle={{ padding: wide * 5, paddingBottom: wide * 22 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); void load(); }} tintColor={c.accent} />}>
-        <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: wide * 7, color: c.main.text, marginBottom: wide * 5 }}>알림</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: wide * 5 }}>
+            <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: wide * 7, color: c.main.text }}>알림</Text>
+            <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="전체 알림 삭제"
+                disabled={deleting || items.length === 0}
+                onPress={() => setDeleteModalVisible(true)}
+                style={{ minHeight: 40, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, borderRadius: 8, backgroundColor: c.red.cover, opacity: deleting || items.length === 0 ? 0.5 : 1 }}
+            >
+                {deleting ? <ActivityIndicator size="small" color={c.red.text} /> : <Ionicons name="trash-outline" size={wide * 4} color={c.red.text} />}
+                <Text style={{ fontFamily: 'Pretendard-SemiBold', fontSize: wide * 2.8, color: c.red.text }}>{deleting ? '삭제 중...' : '전체 삭제'}</Text>
+            </Pressable>
+        </View>
         {loading ? <ActivityIndicator color={c.accent} /> : items.length ? items.map(item => <NotificationCard key={item.id} item={item} wide={wide} isDark={isDark} />) : <Text style={{ fontFamily: 'Pretendard-Regular', color: c.subText }}>현재 알림이 없습니다.</Text>}
+        <ConfirmModal
+            visible={deleteModalVisible}
+            title="알림 전체 삭제"
+            message="등록된 서버들의 저장된 알림을 모두 삭제할까요?"
+            confirmLabel="삭제"
+            destructive
+            onCancel={() => setDeleteModalVisible(false)}
+            onConfirm={() => void deleteNotifications()}
+            c={c}
+        />
     </ScrollView>;
 }

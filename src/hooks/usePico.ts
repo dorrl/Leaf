@@ -1,4 +1,5 @@
 import { useServerAddress } from '@/hooks/useServerAddress';
+import type { PicoOptimalRange } from '@/types/pico';
 import { useCallback } from 'react';
 
 export type PicoReadingPeriod = '24h' | '7d' | '30d' | '1y' | 'all';
@@ -59,5 +60,24 @@ export function usePico() {
         return readResponse<TResponse>(response);
     }, [getServerApiKey, servers]);
 
-    return { getPicoState, getPicoReadings, setPicoName };
+    const setPicoOptimalRange = useCallback(async (serverId: string, picoId: string, optimalRange: PicoOptimalRange): Promise<void> => {
+        const server = servers.find(item => item.id === serverId);
+        if (!server) throw new Error(`Server not found: ${serverId}`);
+
+        const baseUrl = server.address.startsWith('http') ? server.address : `http://${server.address}`;
+        const apiKey = await getServerApiKey(serverId) || process.env.EXPO_PUBLIC_SMARTFARM_API_KEY || '';
+        if (!apiKey) throw new Error('서버 API 키를 먼저 설정하세요.');
+        const response = await fetch(`${baseUrl}/picos/${encodeURIComponent(picoId)}/optimalRange`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'X-API-Key': apiKey,
+            },
+            body: JSON.stringify(optimalRange),
+        });
+        if (!response.ok) throw new Error(`적정 범위 저장 실패 (HTTP ${response.status})`);
+    }, [getServerApiKey, servers]);
+
+    return { getPicoState, getPicoReadings, setPicoName, setPicoOptimalRange };
 }
