@@ -350,7 +350,11 @@ export default function Index() {
     }, [servers]);
 
     useEffect(() => {
-        loadData();
+        let active = true;
+        void Promise.resolve().then(() => {
+            if (active) void loadData();
+        });
+        return () => { active = false; };
     }, [loadData]);
 
     useEffect(() => {
