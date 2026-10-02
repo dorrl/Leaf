@@ -152,12 +152,14 @@ function ServerCard({ server, wide, isDarkTheme, wideLayout, tabletLayout, onCon
                                 </View>
                             )}
                         </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: wide * 0.8 }}>
-                            <Ionicons name="location-outline" size={wide * 3.2} color={locationColor} style={{ marginRight: wide * 1 }} />
-                            <Text style={{ fontFamily: 'Pretendard-Medium', fontSize: wide * 2.8, color: locationColor }} numberOfLines={1}>
-                                {server.location}
-                            </Text>
-                        </View>
+                        {tabletLayout && (
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: wide * 0.8 }}>
+                                <Ionicons name="location-outline" size={wide * 3.2} color={locationColor} style={{ marginRight: wide * 1 }} />
+                                <Text style={{ fontFamily: 'Pretendard-Medium', fontSize: wide * 2.8, color: locationColor }} numberOfLines={1}>
+                                    {server.location}
+                                </Text>
+                            </View>
+                        )}
                     </View>
 
                     {/* Status summary & Configure Action button inside server header */}
