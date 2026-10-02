@@ -126,6 +126,7 @@ function ServerCard({ server, wide, isDarkTheme, onConfigure }: {
     const scale = useSharedValue(1);
 
     const isDark = isDarkTheme;
+    const c = isDark ? Colors.dark : Colors.light;
     const cardWidth = wide >= 3.9 ? '48%' : (wide >= 3.0 ? '82%' : '100%');
 
     const cardBg = c.main.cover;
