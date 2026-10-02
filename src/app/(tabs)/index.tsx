@@ -350,7 +350,7 @@ export default function Index() {
                 }
             >
                 {/* Custom Premium Header */}
-                <View style={[styles.header, { paddingHorizontal: tabletLayout ? 28 : 18, marginBottom: 14 }]}>
+                <View style={[styles.header, { paddingHorizontal: tabletLayout ? 28 : 12, marginBottom: 14 }]}>
                     <View style={[styles.headerIconContainer, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
                         <Ionicons name="leaf-outline" size={19} color={c.accent} />
                     </View>
@@ -364,7 +364,7 @@ export default function Index() {
                 </View>
 
                 {/* Dashboard greeting title */}
-                <View style={{ paddingHorizontal: tabletLayout ? 28 : 18, marginBottom: 18 }}>
+                <View style={{ paddingHorizontal: tabletLayout ? 28 : 12, marginBottom: 18 }}>
                     <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 28, color: c.main.text }}>
                         스마트팜 허브
                     </Text>
@@ -402,7 +402,7 @@ export default function Index() {
                         <ActivityIndicator size="large" color={c.accent} />
                     </View>
                 ) : (
-                    <View style={{ paddingHorizontal: tabletLayout ? 28 : 18, flexDirection: wideLayout ? 'row' : 'column', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 14 }}>
+                    <View style={{ paddingHorizontal: tabletLayout ? 28 : 12, flexDirection: wideLayout ? 'row' : 'column', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 14 }}>
                         {fetchedServers.map((server) => (
                             <ServerCard
                                 key={server.id}
