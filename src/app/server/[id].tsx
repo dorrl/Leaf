@@ -74,8 +74,8 @@ function LargePicoCard({ pico, serverId, wide, isDark, cardWidth }: { pico: Pico
     const c = isDark ? Colors.dark : Colors.light;
     const router = useRouter();
 
-    const cardBg = c.main.cover;
-    const borderColor = c.main.outline;
+    const cardBg = pico.status === 'normal' ? c.green.cover : pico.status === 'wrong' ? c.red.cover : c.main.cover;
+    const borderColor = pico.status === 'normal' ? c.green.outline : pico.status === 'wrong' ? c.red.outline : c.main.outline;
     let badgeBg = '', badgeText = '', badgeLabel = '';
     let tempColor = isDark ? '#60A5FA' : '#3B82F6';
     let humidColor = isDark ? '#4ADE80' : '#22C55E';
@@ -108,9 +108,13 @@ function LargePicoCard({ pico, serverId, wide, isDark, cardWidth }: { pico: Pico
             style={{ width: cardWidth, marginBottom: 12 }}
         >
             <View style={[styles.largePico, {
-                backgroundColor: cardBg, borderColor, borderRadius: 8,
-                padding: 14, borderWidth: 1, minHeight: 176,
-                shadowOpacity: 0, elevation: 0,
+                backgroundColor: cardBg, borderColor, borderRadius: 14,
+                padding: 15, borderWidth: 1, minHeight: 176,
+                shadowColor: '#10231E',
+                shadowOffset: { width: 0, height: 3 },
+                shadowOpacity: isDark ? 0.16 : 0.05,
+                shadowRadius: 9,
+                elevation: isDark ? 2 : 2,
             }]}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: wide * 3.5 }}>
                     <Text style={[styles.largePicoTitle, { color: c.main.text, fontSize: wide * 4.2 }]} numberOfLines={1}>{pico.name}</Text>
@@ -284,8 +288,8 @@ export default function ServerDetail() {
                         {/* Filter segments */}
                         <View style={[styles.segmentContainer, {
                             backgroundColor: c.sub.cover,
-                            borderRadius: 8, borderColor: c.main.outline,
-                            borderWidth: 1, padding: 3, marginBottom: 18,
+                            borderRadius: 14, borderColor: c.main.outline,
+                            borderWidth: 1, padding: 4, marginBottom: 18,
                         }]}>
                             {(['normal', 'all', 'wrong'] as FilterType[]).map((type) => {
                                 const isActive = filter === type;
@@ -297,7 +301,7 @@ export default function ServerDetail() {
                                 return (
                                     <Pressable key={type} onPress={() => setFilter(type)} style={[
                                         styles.segmentButton,
-                                        isActive && { backgroundColor: activeBg, borderRadius: wide * 2.2, elevation: 1 }
+                                        isActive && { backgroundColor: activeBg, borderRadius: 10, elevation: 1, shadowColor: '#10231E', shadowOpacity: 0.05, shadowRadius: 4 }
                                     ]}>
                                         <Text style={{
                                             color: isActive ? activeTxt : (isDark ? '#64748B' : '#94A3B8'),
@@ -325,13 +329,13 @@ export default function ServerDetail() {
 const styles = StyleSheet.create({
     container: { flex: 1 },
     header: { flexDirection: 'row', alignItems: 'center' },
-    headerIcon: { width: 38, height: 38, borderRadius: 8, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
+    headerIcon: { width: 40, height: 40, borderRadius: 12, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
     scroll: { flex: 1 },
     serverTitle: { fontFamily: 'Pretendard-Bold' },
     urlDot: { width: 6, height: 6, borderRadius: 3 },
     errorBanner: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 8, padding: 12 },
-    segmentContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    segmentButton: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 10 },
+    segmentContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 4 },
+    segmentButton: { flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 40, paddingVertical: 9 },
     gridContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 16 },
     largePico: { borderWidth: 1 },
     largePicoTitle: { fontFamily: 'Pretendard-Bold' },
