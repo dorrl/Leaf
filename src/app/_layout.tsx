@@ -35,7 +35,7 @@ export default function RootLayout() {
         <ThemeProvider>
             <ServerAddressProvider>
                 <NotificationPollingRuntime />
-                <Stack screenOptions={{ headerShown: false }}>
+                <Stack screenOptions={{ headerShown: false, navigationBarHidden: true }}>
                     <Stack.Screen name="(tabs)" />
                     <Stack.Screen name='server' />
                 </Stack>
