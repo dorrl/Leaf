@@ -146,7 +146,7 @@ function ServerCard({ server, wide, isDarkTheme, wideLayout, tabletLayout, onCon
                     backgroundColor: cardBg,
                     borderColor: cardBorder,
                     borderRadius: 8,
-                    padding: 14,
+                    padding: tabletLayout ? 16 : 14,
                     shadowOpacity: 0,
                     elevation: 0,
                     borderWidth: server.error ? 1.5 : 1,
