@@ -149,7 +149,7 @@ export default function ServerDetail() {
     const c = isDark ? Colors.dark : Colors.light;
     const { width, height } = useWindowDimensions();
     const wide = Math.min(Math.min(width, height) * 0.01, 4);
-    const cardWidth: '32%' | '48.5%' | '100%' = width >= 1200 ? '32%' : width >= 760 ? '48.5%' : '100%';
+    const cardWidth: '32%' | '48.5%' | '100%' = width >= 1180 ? '32%' : width >= 700 ? '48.5%' : '100%';
 
     const { servers, loaded } = useServerAddress();
     const serverConfig = servers.find(s => s.id === id);
@@ -225,7 +225,7 @@ export default function ServerDetail() {
     return (
         <View style={[styles.container, { backgroundColor: c.background }]}>
             {/* Header */}
-            <View style={[styles.header, { width: '100%', maxWidth: 1160, alignSelf: 'center', paddingHorizontal: 24, paddingTop: 18, marginBottom: 4 }]}>
+            <View style={[styles.header, { width: '100%', maxWidth: 1160, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 16, paddingTop: width >= 700 ? 20 : 14, marginBottom: 4 }]}>
                 <Pressable onPress={() => router.back()}
                     style={[styles.headerIcon, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
                     <Ionicons name="chevron-back" size={20} color={c.main.text} />
@@ -239,7 +239,7 @@ export default function ServerDetail() {
 
             <ScrollView
                 style={styles.scroll}
-                contentContainerStyle={{ width: '100%', maxWidth: 1160, alignSelf: 'center', paddingHorizontal: 24, paddingBottom: 28 }}
+                contentContainerStyle={{ width: '100%', maxWidth: 1160, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 16, paddingBottom: 32 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh}
