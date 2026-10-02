@@ -6,9 +6,9 @@ import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 export default function Settings() {
     const { isDark, toggleTheme } = useTheme(); const c = isDark ? Colors.dark : Colors.light;
     const [notifications, setNotifications] = useState(true);
-    return <ScrollView style={{ flex: 1, backgroundColor: c.background }} contentContainerStyle={{ width: '100%', maxWidth: 860, alignSelf: 'center', paddingHorizontal: 20, paddingTop: 24, paddingBottom: 100 }}>
+    return <ScrollView style={{ flex: 1, backgroundColor: c.background }} contentContainerStyle={{ width: '100%', maxWidth: 720, alignSelf: 'center', paddingHorizontal: 18, paddingTop: 22, paddingBottom: 100 }}>
         <View style={{ marginBottom: 20 }}>
-            <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 26, color: c.main.text }}>설정</Text>
+            <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 25, color: c.main.text }}>설정</Text>
             <Text style={{ fontFamily: 'Pretendard-Regular', fontSize: 13, color: c.subText, marginTop: 4 }}>앱 표시와 알림 환경</Text>
         </View>
         <View style={[styles.settingsList, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
@@ -37,7 +37,7 @@ export default function Settings() {
 
 const styles = StyleSheet.create({
     settingsList: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 16 },
-    settingRow: { minHeight: 70, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    settingRow: { minHeight: 68, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
     settingTitle: { fontFamily: 'Pretendard-SemiBold', fontSize: 14 },
     settingDescription: { fontFamily: 'Pretendard-Regular', fontSize: 12, marginTop: 3 },
     divider: { height: 1 },
