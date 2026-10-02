@@ -15,27 +15,26 @@ export default function TabsLayout() {
                 headerShown: false,
                 tabBarStyle: {
                     position: 'absolute',
-                    bottom: Platform.OS === 'ios' ? 24 : 16,
-                    left: 24,
-                    right: 24,
-                    borderRadius: 28,
-                    height: 68,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: Platform.OS === 'ios' ? 82 : 62,
                     backgroundColor: c.tab.bg,
-                    borderTopWidth: 0,
+                    borderTopColor: isDark ? '#3F4147' : '#DCDDDF',
+                    borderTopWidth: 1,
                     elevation: 0,
-                    shadowColor: isDark ? '#4ADE80' : '#000',
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: isDark ? 0.2 : 0.1,
-                    shadowRadius: 20,
-                    paddingBottom: 8,
-                    paddingTop: 8,
+                    paddingBottom: Platform.OS === 'ios' ? 22 : 4,
+                    paddingTop: 4,
                 },
                 tabBarActiveTintColor: c.tab.active,
                 tabBarInactiveTintColor: c.tab.inactive,
                 tabBarLabelStyle: {
                     fontFamily: 'Pretendard-Medium',
                     fontSize: 11,
-                    marginTop: 2,
+                    marginTop: 1,
+                },
+                tabBarItemStyle: {
+                    paddingVertical: 3,
                 },
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName: keyof typeof Ionicons.glyphMap = 'home';
@@ -50,14 +49,14 @@ export default function TabsLayout() {
                         <View style={{
                             alignItems: 'center',
                             justifyContent: 'center',
-                            width: 40,
-                            height: 32,
-                            borderRadius: 16,
+                            width: 32,
+                            height: 28,
+                            borderRadius: 7,
                             backgroundColor: focused
-                                ? (isDark ? 'rgba(74,222,128,0.15)' : 'rgba(34,197,94,0.12)')
+                                ? (isDark ? 'rgba(135,146,247,0.18)' : 'rgba(88,101,242,0.1)')
                                 : 'transparent',
                         }}>
-                            <Ionicons name={iconName} size={22} color={color} />
+                            <Ionicons name={iconName} size={19} color={color} />
                         </View>
                     );
                 },

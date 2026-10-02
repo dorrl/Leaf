@@ -14,7 +14,9 @@ export function BackButton({ onPress, color, backgroundColor }: {
             style={{
                 width: 40,
                 height: 40,
-                borderRadius: 20,
+                borderRadius: 8,
+                borderWidth: 1,
+                borderColor: backgroundColor,
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor,

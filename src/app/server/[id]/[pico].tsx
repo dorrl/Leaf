@@ -346,7 +346,7 @@ export default function PicoStatus() {
     const { isDark } = useTheme();
     const c = isDark ? Colors.dark : Colors.light;
     const { width, height } = useWindowDimensions();
-    const wide = Math.min(width, height) * 0.01;
+    const wide = Math.min(Math.min(width, height) * 0.01, 4);
     const { servers, loaded } = useServerAddress();
     const server = servers.find(item => item.id === serverId);
     const { getPicoState, getPicoReadings, setPicoName, setPicoOptimalRange } = usePico();
@@ -422,7 +422,7 @@ export default function PicoStatus() {
     const statusColor = status === 'normal' ? c.green.text : status === 'wrong' ? c.red.text : status === 'disconnected' ? c.subText : c.orange.text;
     const statusLabel = status === 'normal' ? '정상' : status === 'wrong' ? '주의 필요' : status === 'disconnected' ? '연결 끊김' : '상태 정보 없음';
     const updatedAt = current?.at ? new Date(current.at).toLocaleString('ko-KR') : '업데이트 시간 정보 없음';
-    const chartWidth = Math.max(width - wide * 18, 180);
+    const chartWidth = Math.max(Math.min(width - wide * 18, 1040), 180);
 
     const refresh = () => { setRefreshing(true); void loadReadings(); };
 
@@ -502,7 +502,7 @@ export default function PicoStatus() {
 
     return (
         <View style={[styles.container, { backgroundColor: c.background }]}>
-            <ScrollView style={styles.scroll} scrollEnabled={!chartTouchActive} contentContainerStyle={{ padding: wide * 5, paddingBottom: wide * 22 }} refreshControl={
+            <ScrollView style={styles.scroll} scrollEnabled={!chartTouchActive} contentContainerStyle={{ width: '100%', maxWidth: 1120, alignSelf: 'center', paddingHorizontal: 20, paddingTop: 8, paddingBottom: 36 }} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={c.accent} colors={[c.accent]} />
             }>
                 { /* back & title */ }
@@ -655,7 +655,7 @@ const styles = StyleSheet.create({
     headerIcon: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
     scroll: { flex: 1 },
     centered: { alignItems: 'center', justifyContent: 'center' },
-    section: { borderWidth: 1, borderRadius: 12 },
+    section: { borderWidth: 1, borderRadius: 8 },
     valueGrid: { flexDirection: 'row', gap: 12, flexWrap: 'wrap' },
     rangeControl: { marginTop: 14, paddingBottom: 14, borderBottomWidth: 1 },
     rangeHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
