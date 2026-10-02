@@ -65,10 +65,9 @@ function MiniPicoCard({ pico, isServerDark, wide }: { pico: Pico; isServerDark: 
             styles.miniPico,
             {
                 backgroundColor: bgColor,
-                width: '23.5%',
-                height: wide * 22,
+                width: '24%',
+                aspectRatio: 1,
                 padding: wide * 1.5,
-                marginRight: wide * 3,
                 borderRadius: wide * 2.5,
                 borderColor: isServerDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
                 borderWidth: 1,
@@ -404,6 +403,7 @@ export default function Index() {
     const totalPicos = fetchedServers.reduce((acc, s) => acc + s.picos.length, 0);
     const wrongPicos = fetchedServers.reduce((acc, s) => acc + s.picos.filter(p => p.status === 'wrong').length, 0);
     const offlineServers = fetchedServers.filter(s => s.error).length;
+    const dashboardCardWidth = wide >= 3.9 ? '48%' : (wide >= 3.0 ? '82%' : '100%');
 
     return (
         <View style={{ flex: 1, backgroundColor: c.background }}>
@@ -442,6 +442,9 @@ export default function Index() {
                             backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : '#FFFFFF',
                             borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
                             padding: wide * 3.5,
+                            width: dashboardCardWidth,
+                            maxWidth: 560,
+                            alignSelf: 'center',
                             borderRadius: wide * 4,
                             marginTop: wide * 3,
                         }
@@ -487,7 +490,7 @@ export default function Index() {
                                 {
                                     borderColor: c.main.outline,
                                     backgroundColor: 'transparent',
-                                    width: wide >= 3.9 ? '48%' : (wide >= 3.0 ? '82%' : '100%'),
+                                    width: dashboardCardWidth,
                                     maxWidth: 560,
                                     minHeight: 120,
                                     height: wide >= 3.0 ? 180 : 150,

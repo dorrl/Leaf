@@ -109,7 +109,7 @@ function LargePicoCard({ pico, serverId, wide, isDark, cardWidth }: { pico: Pico
         >
             <View style={[styles.largePico, {
                 backgroundColor: cardBg, borderColor, borderRadius: 14,
-                padding: 15, borderWidth: 1, minHeight: 176,
+                padding: 15, borderWidth: 1, aspectRatio: 1,
                 shadowColor: '#10231E',
                 shadowOffset: { width: 0, height: 3 },
                 shadowOpacity: isDark ? 0.16 : 0.05,
@@ -229,7 +229,7 @@ export default function ServerDetail() {
     return (
         <View style={[styles.container, { backgroundColor: c.background }]}>
             {/* Header */}
-            <View style={[styles.header, { width: '100%', maxWidth: 1160, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 12, paddingTop: width >= 700 ? 20 : 14, marginBottom: 4 }]}>
+            <View style={[styles.header, { width: '100%', maxWidth: 1160, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 12, paddingTop: width >= 700 ? 36 : 28, marginBottom: 8 }]}>
                 <Pressable onPress={() => router.back()}
                     style={[styles.headerIcon, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
                     <Ionicons name="chevron-back" size={20} color={c.main.text} />

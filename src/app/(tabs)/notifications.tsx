@@ -144,9 +144,9 @@ export default function Notifications() {
             accessibilityRole="button"
             accessibilityState={{ selected }}
             onPress={() => setSelectedServerId(serverId)}
-            style={{ minHeight: 38, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, borderRadius: 6, backgroundColor: selected ? c.sub.cover : 'transparent' }}
+            style={{ minHeight: 38, alignSelf: isWideLayout ? 'stretch' : 'flex-start', minWidth: isWideLayout ? undefined : 84, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: selected ? c.accent : c.main.outline, backgroundColor: selected ? c.sub.cover : c.main.cover }}
         >
-            <Text style={{ flex: 1, fontFamily: selected ? 'Pretendard-SemiBold' : 'Pretendard-Medium', fontSize: 13, color: selected ? c.main.text : c.subText }} numberOfLines={1}>{label}</Text>
+            <Text style={{ fontFamily: selected ? 'Pretendard-SemiBold' : 'Pretendard-Medium', fontSize: 13, color: selected ? c.main.text : c.subText, marginRight: 10 }} numberOfLines={1}>{label}</Text>
             <Text style={{ fontFamily: 'Pretendard-Medium', fontSize: 11, color: selected ? c.main.text : c.subText }}>{count}</Text>
         </Pressable>;
     };
@@ -207,7 +207,7 @@ export default function Notifications() {
                     {deleting ? <ActivityIndicator size="small" color={c.red.text} /> : <Ionicons name="trash-outline" size={18} color={c.red.text} />}
                 </Pressable>
             </View>
-            {!isWideLayout && <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: 10, gap: 8 }}>
+            {!isWideLayout && <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 12, gap: 8 }}>
                 {renderServerFilter(null, '모든 서버', items.length)}
                 {servers.map(server => renderServerFilter(server.id, server.name, serverCounts[server.id] ?? 0))}
             </ScrollView>}
