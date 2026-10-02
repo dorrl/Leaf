@@ -142,11 +142,11 @@ export default function ServerSetting() {
     if (server === undefined) return
 
     return (
-        <ScrollView style={{ flex: 1, backgroundColor: c.background }} contentContainerStyle={{ width: '100%', maxWidth: 840, alignSelf: 'center', paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 }}>
+        <ScrollView style={{ flex: 1, backgroundColor: c.background }} contentContainerStyle={{ width: '100%', maxWidth: 760, alignSelf: 'center', paddingHorizontal: 16, paddingTop: 14, paddingBottom: 40 }}>
             <View style={{ paddingTop: 2 }}>
                 <BackButton onPress={() => router.back()} color={c.main.text} backgroundColor={isDark ? 'rgba(255,255,255,0.04)' : '#FFFFFF'} />
             </View>
-            <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 26, color: c.main.text, marginTop: 20 }}>{server.name} 설정</Text>
+            <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 25, color: c.main.text, marginTop: 20 }}>{server.name} 설정</Text>
             <Text style={[styles.heading, { color: c.subText, marginTop: 22 }]}>센서 및 데이터 보관</Text>
             <ServerRuntimeSettings key={id} server={server} wide={wide} c={c} />
             <Text style={[styles.heading, { color: c.subText, marginTop: 22 }]}>서버 연결</Text>
