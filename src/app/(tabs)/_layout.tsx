@@ -13,6 +13,7 @@ export default function TabsLayout() {
         <Tabs
             screenOptions={({ route }) => ({
                 headerShown: false,
+                navigationBarHidden: true,
                 tabBarStyle: {
                     position: 'absolute',
                     bottom: 0,
