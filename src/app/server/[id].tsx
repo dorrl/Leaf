@@ -229,7 +229,7 @@ export default function ServerDetail() {
     return (
         <View style={[styles.container, { backgroundColor: c.background }]}>
             {/* Header */}
-            <View style={[styles.header, { width: '100%', maxWidth: 1160, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 12, paddingTop: width >= 700 ? 36 : 28, marginBottom: 8 }]}>
+            <View style={[styles.header, { width: '100%', maxWidth: 1160, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 12, paddingTop: width >= 700 ? 36 : 32, marginBottom: 8 }]}>
                 <Pressable onPress={() => router.back()}
                     style={[styles.headerIcon, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
                     <Ionicons name="chevron-back" size={20} color={c.main.text} />
