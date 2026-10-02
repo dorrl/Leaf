@@ -126,16 +126,15 @@ function ServerCard({ server, wide, isDarkTheme, onConfigure }: {
     const scale = useSharedValue(1);
 
     const isDark = isDarkTheme;
+    const cardWidth = wide >= 3.9 ? '48%' : (wide >= 3.0 ? '82%' : '100%');
 
-    const cardBg = isDark ? '#111827' : '#FFFFFF';
+    const cardBg = c.main.cover;
     const cardBorder = server.error
-        ? (isDark ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.15)')
-        : (isDark ? 'rgba(74, 222, 128, 0.12)' : 'rgba(0, 0, 0, 0.05)');
+        ? c.red.outline
+        : c.main.outline;
 
-    const titleColor = isDark ? '#FFFFFF' : '#1E293B';
-    const locationColor = isDark ? 'rgba(255, 255, 255, 0.6)' : '#64748B';
-    const plusBg = isDark ? 'rgba(255, 255, 255, 0.04)' : '#F8FAFC';
-    const plusColor = isDark ? 'rgba(74, 222, 128, 0.5)' : '#94A3B8';
+    const titleColor = c.main.text;
+    const locationColor = c.subText;
 
     const pressHandler = () => {
         scale.value = withSpring(0.98, { damping: 15 }, () => {
@@ -159,7 +158,7 @@ function ServerCard({ server, wide, isDarkTheme, onConfigure }: {
     );
 
     return (
-        <Pressable onPress={pressHandler}>
+        <Pressable onPress={pressHandler} style={{ width: cardWidth, maxWidth: 560 }}>
             <Animated.View style={[
                 animStyle,
                 styles.serverCard,
@@ -409,14 +408,14 @@ export default function Index() {
         <View style={{ flex: 1, backgroundColor: c.background }}>
             <ScrollView
                 style={[styles.scroll, { backgroundColor: c.background }]}
-                contentContainerStyle={{ paddingBottom: wide * 26, paddingTop: wide * 6 }}
+                contentContainerStyle={{ paddingBottom: 96, paddingTop: wide >= 3.0 ? 24 : 16, alignItems: 'center' }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={c.accent} colors={[c.accent]} />
                 }
             >
                 {/* Custom Premium Header */}
-                <View style={[styles.header, { paddingHorizontal: wide * 6, marginBottom: wide * 3 }]}>
+                <View style={[styles.header, { width: '100%', maxWidth: 980, paddingHorizontal: wide >= 3.0 ? 28 : 20, marginBottom: wide * 3 }]}>
                     <View style={[styles.headerIconContainer, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : '#FFFFFF' }]}>
                         <Ionicons name="leaf" size={wide * 5} color={c.accent} />
                     </View>
@@ -430,7 +429,7 @@ export default function Index() {
                 </View>
 
                 {/* Dashboard greeting title */}
-                <View style={{ paddingHorizontal: wide * 6, marginBottom: wide * 5 }}>
+                <View style={{ width: '100%', maxWidth: 980, paddingHorizontal: wide >= 3.0 ? 28 : 20, marginBottom: wide * 5 }}>
                     <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: wide * 7, color: c.main.text }}>
                         스마트팜 허브
                     </Text>
@@ -468,7 +467,7 @@ export default function Index() {
                         <ActivityIndicator size="large" color={c.accent} />
                     </View>
                 ) : (
-                    <View style={{ paddingHorizontal: wide * 6, gap: wide * 5.5 }}>
+                    <View style={{ width: '100%', maxWidth: 980, paddingHorizontal: wide >= 3.0 ? 28 : 20, gap: wide >= 3.9 ? 18 : 20, alignItems: wide >= 3.9 ? 'stretch' : 'center' }}>
                         {fetchedServers.map((server) => (
                             <ServerCard
                                 key={server.id}
@@ -485,15 +484,18 @@ export default function Index() {
                             style={[
                                 styles.addServerCard,
                                 {
-                                    borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)',
-                                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.01)' : 'rgba(0, 0, 0, 0.005)',
-                                    height: wide * 28,
+                                    borderColor: c.main.outline,
+                                    backgroundColor: 'transparent',
+                                    width: wide >= 3.9 ? '48%' : (wide >= 3.0 ? '82%' : '100%'),
+                                    maxWidth: 560,
+                                    minHeight: 120,
+                                    height: wide >= 3.0 ? 180 : 150,
                                     borderRadius: wide * 5,
                                 }
                             ]}
                         >
-                            <Ionicons name="add-circle" size={wide * 8} color={isDark ? 'rgba(255,255,255,0.15)' : '#94A3B8'} style={{ marginBottom: wide * 1 }} />
-                            <Text style={{ fontFamily: 'Pretendard-Medium', fontSize: wide * 3, color: isDark ? '#475569' : '#94A3B8' }}>
+                            <Ionicons name="add-circle" size={wide >= 3.0 ? 32 : 28} color={c.subText} style={{ marginBottom: wide * 1 }} />
+                            <Text style={{ fontFamily: 'Pretendard-Medium', fontSize: wide >= 3.0 ? 14 : 13, color: c.subText }}>
                                 새 온실 서버 추가
                             </Text>
                         </Pressable>
