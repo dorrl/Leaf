@@ -225,7 +225,7 @@ export default function ServerDetail() {
     return (
         <View style={[styles.container, { backgroundColor: c.background }]}>
             {/* Header */}
-            <View style={[styles.header, { width: '100%', maxWidth: 1160, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 16, paddingTop: width >= 700 ? 20 : 14, marginBottom: 4 }]}>
+            <View style={[styles.header, { width: '100%', maxWidth: 1160, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 12, paddingTop: width >= 700 ? 20 : 14, marginBottom: 4 }]}>
                 <Pressable onPress={() => router.back()}
                     style={[styles.headerIcon, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
                     <Ionicons name="chevron-back" size={20} color={c.main.text} />
@@ -239,7 +239,7 @@ export default function ServerDetail() {
 
             <ScrollView
                 style={styles.scroll}
-                contentContainerStyle={{ width: '100%', maxWidth: 1160, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 16, paddingBottom: 32 }}
+                contentContainerStyle={{ width: '100%', maxWidth: 1160, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 12, paddingBottom: 32 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh}
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     errorBanner: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 8, padding: 12 },
     segmentContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     segmentButton: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 10 },
-    gridContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
+    gridContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 16 },
     largePico: { borderWidth: 1 },
     largePicoTitle: { fontFamily: 'Pretendard-Bold' },
     disconnectedTxt: { fontFamily: 'Pretendard-Medium', textAlign: 'center' },
