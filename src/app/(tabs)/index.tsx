@@ -430,8 +430,8 @@ export default function Index() {
                 </View>
 
                 {/* Dashboard greeting title */}
-                <View style={{ width: '100%', maxWidth: 980, paddingHorizontal: wide >= 3.0 ? 28 : 20, marginBottom: wide * 5 }}>
-                    <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: wide * 7, color: c.main.text }}>
+                <View style={{ width: '100%', maxWidth: 980, paddingHorizontal: wide >= 3.0 ? 28 : 20, marginBottom: wide * 5, alignItems: 'flex-start' }}>
+                    <Text style={{ width: '100%', fontFamily: 'Pretendard-Bold', fontSize: wide * 7, color: c.main.text }}>
                         스마트팜 허브
                     </Text>
 
@@ -471,7 +471,7 @@ export default function Index() {
                         <ActivityIndicator size="large" color={c.accent} />
                     </View>
                 ) : (
-                    <View style={{ width: '100%', maxWidth: 980, paddingHorizontal: wide >= 3.0 ? 28 : 20, gap: wide >= 3.9 ? 18 : 20, alignItems: wide >= 3.9 ? 'stretch' : 'center' }}>
+                    <View style={{ width: '100%', maxWidth: 980, paddingHorizontal: wide >= 3.0 ? 28 : 20, gap: wide >= 3.9 ? 18 : 20, alignItems: 'flex-start' }}>
                         {fetchedServers.map((server) => (
                             <ServerCard
                                 key={server.id}

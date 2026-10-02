@@ -190,7 +190,7 @@ export default function Notifications() {
             {servers.map(server => renderServerFilter(server.id, server.name, serverCounts[server.id] ?? 0))}
         </View>}
         <View style={{ flex: 1, minWidth: 0 }}>
-            <View style={{ width: '100%', maxWidth: 1080, alignSelf: 'center', paddingHorizontal: isWideLayout ? 28 : 16, paddingTop: isWideLayout ? 24 : 20, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+            <View style={{ width: '100%', maxWidth: 1080, alignSelf: 'center', paddingHorizontal: isWideLayout ? 28 : 16, paddingTop: isWideLayout ? 16 : 10, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
                 <View style={{ flex: 1 }}>
                     <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 23, color: c.main.text }}>알림</Text>
                     <Text style={{ fontFamily: 'Pretendard-Regular', fontSize: 12, color: c.subText, marginTop: 3 }}>
@@ -207,7 +207,7 @@ export default function Notifications() {
                     {deleting ? <ActivityIndicator size="small" color={c.red.text} /> : <Ionicons name="trash-outline" size={18} color={c.red.text} />}
                 </Pressable>
             </View>
-            {!isWideLayout && <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 12, gap: 8, flexGrow: 0 }}>
+            {!isWideLayout && <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 6, gap: 8, flexGrow: 0 }}>
                 {renderServerFilter(null, '모든 서버', items.length)}
                 {servers.map(server => renderServerFilter(server.id, server.name, serverCounts[server.id] ?? 0))}
             </ScrollView>}
