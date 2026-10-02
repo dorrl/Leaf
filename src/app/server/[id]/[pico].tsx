@@ -422,7 +422,7 @@ export default function PicoStatus() {
     const statusColor = status === 'normal' ? c.green.text : status === 'wrong' ? c.red.text : status === 'disconnected' ? c.subText : c.orange.text;
     const statusLabel = status === 'normal' ? '정상' : status === 'wrong' ? '주의 필요' : status === 'disconnected' ? '연결 끊김' : '상태 정보 없음';
     const updatedAt = current?.at ? new Date(current.at).toLocaleString('ko-KR') : '업데이트 시간 정보 없음';
-    const contentHorizontalPadding = width >= 700 ? 56 : 32;
+    const contentHorizontalPadding = width >= 700 ? 56 : 24;
     const chartWidth = Math.max(Math.min(width - contentHorizontalPadding, 1040), 180);
 
     const refresh = () => { setRefreshing(true); void loadReadings(); };
@@ -503,7 +503,7 @@ export default function PicoStatus() {
 
     return (
         <View style={[styles.container, { backgroundColor: c.background }]}>
-            <ScrollView style={styles.scroll} scrollEnabled={!chartTouchActive} contentContainerStyle={{ width: '100%', maxWidth: 1120, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 16, paddingTop: width >= 700 ? 10 : 6, paddingBottom: 40 }} refreshControl={
+            <ScrollView style={styles.scroll} scrollEnabled={!chartTouchActive} contentContainerStyle={{ width: '100%', maxWidth: 1120, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 12, paddingTop: width >= 700 ? 10 : 6, paddingBottom: 40 }} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={c.accent} colors={[c.accent]} />
             }>
                 { /* back & title */ }
