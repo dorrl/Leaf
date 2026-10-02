@@ -52,9 +52,9 @@ function MiniPicoCard({ pico, isServerDark, wide, tabletLayout }: { pico: Pico; 
             {
                 backgroundColor: picoBackground,
                 width: tabletLayout ? '24%' : '48%',
-                minHeight: tabletLayout ? 78 : 86,
-                padding: tabletLayout ? 10 : 11,
-                borderRadius: 10,
+                minHeight: tabletLayout ? 72 : 54,
+                padding: tabletLayout ? 9 : 7,
+                borderRadius: 7,
                 borderColor: statusColor.outline,
                 borderWidth: 1,
                 },
@@ -67,29 +67,13 @@ function MiniPicoCard({ pico, isServerDark, wide, tabletLayout }: { pico: Pico; 
             </View>
 
             {pico.status !== 'disconnected' ? (
-                <View style={{ gap: 3 }}>
-                    <View style={styles.miniValRow}>
-                        <Ionicons name="thermometer-outline" size={12} color={c.subText} />
-                        <Text style={[styles.miniPicoTxt, { color: c.main.text, fontSize: 11 }]}>{formatSensorValue(pico.temp)}°C</Text>
-                    </View>
-                    <View style={styles.miniValRow}>
-                        <Ionicons name="water-outline" size={12} color={c.subText} />
-                        <Text style={[styles.miniPicoTxt, { color: c.main.text, fontSize: 11 }]}>{formatSensorValue(pico.humidity)}%</Text>
-                    </View>
-                    <View style={styles.miniValRow}>
-                        <Ionicons name="sunny-outline" size={12} color={lightValueColor} />
-                        <Text style={[styles.miniPicoTxt, { color: lightValueColor, fontSize: 11, fontFamily: 'Pretendard-Bold' }]} numberOfLines={1}>
-                            {formatSensorValue(pico.light)} lx
-                        </Text>
-                    </View>
+                <View style={styles.miniValues}>
+                    <Text style={[styles.miniPicoTxt, { color: c.main.text }]}>{formatSensorValue(pico.temp)}°C</Text>
+                    <Text style={[styles.miniPicoTxt, { color: c.main.text }]}>{formatSensorValue(pico.humidity)}%</Text>
+                    <Text style={[styles.miniPicoTxt, { color: lightValueColor }]} numberOfLines={1}>{formatSensorValue(pico.light)} lx</Text>
                 </View>
             ) : (
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 }}>
-                    <Ionicons name="cloud-offline-outline" size={12} color={c.subText} />
-                    <Text style={{ color: c.subText, fontSize: 10, fontFamily: 'Pretendard-Regular' }}>
-                        오프라인
-                    </Text>
-                </View>
+                <Text style={[styles.miniPicoTxt, { color: c.subText, marginTop: 3 }]}>disconnected</Text>
             )}
         </View>
     );
@@ -139,7 +123,7 @@ function ServerCard({ server, wide, isDarkTheme, wideLayout, tabletLayout, onCon
     );
 
     return (
-        <Pressable onPress={pressHandler} style={{ width: wideLayout ? '49%' : '100%' }}>
+        <Pressable onPress={pressHandler} style={{ width: mobileServerWidth }}>
             <Animated.View style={[
                 animStyle,
                 styles.serverCard,
@@ -230,6 +214,7 @@ export default function Index() {
     const wide = Math.min(Math.min(width, height) * 0.01, 4);
     const tabletLayout = width >= 700;
     const wideLayout = width >= 760;
+    const mobileServerWidth = width < 700 ? '74%' : (wideLayout ? '49%' : '100%');
     const { isDark } = useTheme();
     const c = isDark ? Colors.dark : Colors.light;
     const router = useRouter();
@@ -367,46 +352,13 @@ export default function Index() {
                     </Pressable>
                 </View>
 
-                {/* Dashboard greeting title */}
-                <View style={{ paddingHorizontal: tabletLayout ? 28 : 12, marginBottom: 18 }}>
-                    <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 27, color: c.main.text }}>
-                        스마트팜 허브
-                    </Text>
-
-                    {/* Stats Summary Panel */}
-                    <View style={[
-                        styles.summaryContainer,
-                        {
-                            backgroundColor: c.main.cover,
-                            borderColor: c.main.outline,
-                            padding: 14,
-                            borderRadius: 14,
-                            marginTop: 12,
-                        }
-                    ]}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, marginRight: 12 }}>
-                                <View style={[styles.statusDot, { backgroundColor: offlineServers > 0 ? c.red.text : (wrongPicos > 0 ? c.orange.text : c.green.text) }]} />
-                                <Text style={{ fontSize: 13, fontFamily: 'Pretendard-Medium', color: c.main.text, marginLeft: 8, flex: 1 }} numberOfLines={1}>
-                                    {offlineServers > 0
-                                        ? `${offlineServers}개의 서버가 오프라인 상태입니다`
-                                        : (wrongPicos > 0 ? `${wrongPicos}개의 경고 상태 확인 됨` : '모든 온실 시스템이 안정적입니다')}
-                                </Text>
-                            </View>
-                            <Text style={{ fontSize: 12, fontFamily: 'Pretendard-Regular', color: c.subText }}>
-                                디바이스 {totalPicos}개
-                            </Text>
-                        </View>
-                    </View>
-                </View>
-
                 {/* Server Card List */}
                 {loading ? (
                     <View style={[styles.centerAlign, { marginTop: wide * 10 }]}>
                         <ActivityIndicator size="large" color={c.accent} />
                     </View>
                 ) : (
-                    <View style={{ paddingHorizontal: tabletLayout ? 28 : 12, flexDirection: wideLayout ? 'row' : 'column', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 14 }}>
+                    <View style={{ paddingHorizontal: tabletLayout ? 28 : 0, flexDirection: wideLayout ? 'row' : 'column', flexWrap: 'wrap', justifyContent: wideLayout ? 'space-between' : 'center', alignItems: wideLayout ? 'stretch' : 'center', rowGap: 14 }}>
                         {fetchedServers.map((server) => (
                             <ServerCard
                                 key={server.id}
@@ -427,8 +379,8 @@ export default function Index() {
                                 {
                                     borderColor: c.main.outline,
                                     backgroundColor: 'transparent',
-                                    width: wideLayout ? '49%' : '100%',
-                                    minHeight: tabletLayout ? 64 : 58,
+                                    width: mobileServerWidth,
+                                    minHeight: tabletLayout ? 64 : 88,
                                     borderRadius: 14,
                                 }
                             ]}
@@ -496,12 +448,12 @@ const styles = StyleSheet.create({
         fontFamily: 'Pretendard-Bold',
     },
     miniPicoTxt: {
-        fontFamily: 'Pretendard-Medium',
-        marginLeft: 4,
+        fontFamily: 'Pretendard-Regular',
+        fontSize: 11,
+        lineHeight: 14,
     },
-    miniValRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
+    miniValues: {
+        gap: 0,
     },
     centerAlign: {
         alignItems: 'center',
