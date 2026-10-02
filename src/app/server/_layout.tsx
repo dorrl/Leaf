@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 
 export default function ServerLayout() {
     return (
-        <Stack screenOptions={{ headerShown: false }}>
+        <Stack screenOptions={{ headerShown: false, navigationBarHidden: true }}>
             <Stack.Screen name="create" />
             <Stack.Screen name="[id]" />
             <Stack.Screen name="[id]/setting" />
