@@ -2,14 +2,14 @@ export const Colors = {
     light: {
         text: '#232428',
         subText: '#6D737D',
-        background: '#F2F3F5',
-        accent: '#5865F2',
+        background: '#F3F6F4',
+        accent: '#0F766E',
         accentSecondary: '#3D8B8B',
         main: {
             cover: '#FFFFFF',
             text: '#232428',
             shadow: 'rgba(35,36,40,0.04)',
-            outline: '#DCDDDF',
+            outline: '#D9E2DE',
         },
         green: {
             cover: '#E4F4EA',
@@ -43,15 +43,15 @@ export const Colors = {
         },
         tab: {
             bg: '#FFFFFF',
-            active: '#5865F2',
+            active: '#0F766E',
             inactive: '#858B94',
         },
     },
     dark: {
         text: '#F2F3F5',
         subText: '#B5BAC1',
-        background: '#232428',
-        accent: '#8792F7',
+        background: '#202522',
+        accent: '#72B7A9',
         accentSecondary: '#4EA6A3',
         main: {
             cover: '#2B2D31',
@@ -91,7 +91,7 @@ export const Colors = {
         },
         tab: {
             bg: '#2B2D31',
-            active: '#AAB2FF',
+            active: '#72B7A9',
             inactive: '#949BA4',
         },
     },
