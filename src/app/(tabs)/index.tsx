@@ -34,7 +34,7 @@ interface Server {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function MiniPicoCard({ pico, isServerDark, wide }: { pico: Pico; isServerDark: boolean; wide: number }) {
+function MiniPicoCard({ pico, isServerDark, wide, tabletLayout }: { pico: Pico; isServerDark: boolean; wide: number; tabletLayout: boolean }) {
     const c = isServerDark ? Colors.dark : Colors.light;
     const statusColor = pico.status === 'normal' ? c.green : pico.status === 'wrong' ? c.red : c.sub;
     const lightValueColor = c.orange.text;
@@ -50,9 +50,9 @@ function MiniPicoCard({ pico, isServerDark, wide }: { pico: Pico; isServerDark: 
             styles.miniPico,
             {
                 backgroundColor: c.main.cover,
-                width: '24%',
-                minHeight: 72,
-                padding: 8,
+                width: tabletLayout ? '24%' : '48%',
+                minHeight: tabletLayout ? 78 : 86,
+                padding: tabletLayout ? 9 : 10,
                 borderRadius: 6,
                 borderColor: c.main.outline,
                 borderWidth: 1,
@@ -94,11 +94,12 @@ function MiniPicoCard({ pico, isServerDark, wide }: { pico: Pico; isServerDark: 
     );
 }
 
-function ServerCard({ server, wide, isDarkTheme, wideLayout, onConfigure }: {
+function ServerCard({ server, wide, isDarkTheme, wideLayout, tabletLayout, onConfigure }: {
     server: Server;
     wide: number;
     isDarkTheme: boolean;
     wideLayout: boolean;
+    tabletLayout: boolean;
     onConfigure: () => void;
 }) {
     const router = useRouter();
@@ -210,7 +211,7 @@ function ServerCard({ server, wide, isDarkTheme, wideLayout, onConfigure }: {
                 {/* Grid of mini picos */}
                 <View style={styles.grid}>
                     {server.picos.map((pico, idx) => (
-                        <MiniPicoCard key={idx} pico={pico} isServerDark={isDark} wide={wide} />
+                        <MiniPicoCard key={idx} pico={pico} isServerDark={isDark} wide={wide} tabletLayout={tabletLayout} />
                     ))}
                 </View>
             </Animated.View>
@@ -223,6 +224,7 @@ function ServerCard({ server, wide, isDarkTheme, wideLayout, onConfigure }: {
 export default function Index() {
     const { width, height } = useWindowDimensions();
     const wide = Math.min(Math.min(width, height) * 0.01, 4);
+    const tabletLayout = width >= 700;
     const wideLayout = width >= 760;
     const { isDark } = useTheme();
     const c = isDark ? Colors.dark : Colors.light;
@@ -341,14 +343,14 @@ export default function Index() {
         <View style={{ flex: 1, backgroundColor: c.background }}>
             <ScrollView
                 style={[styles.scroll, { backgroundColor: c.background }]}
-                contentContainerStyle={{ width: '100%', maxWidth: 1320, alignSelf: 'center', paddingBottom: 88, paddingTop: 24 }}
+                contentContainerStyle={{ width: '100%', maxWidth: 1180, alignSelf: 'center', paddingBottom: 88, paddingTop: tabletLayout ? 26 : 18 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={c.accent} colors={[c.accent]} />
                 }
             >
                 {/* Custom Premium Header */}
-                <View style={[styles.header, { paddingHorizontal: wide * 6, marginBottom: 14 }]}>
+                <View style={[styles.header, { paddingHorizontal: tabletLayout ? 28 : 18, marginBottom: 14 }]}>
                     <View style={[styles.headerIconContainer, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
                         <Ionicons name="leaf-outline" size={19} color={c.accent} />
                     </View>
@@ -362,7 +364,7 @@ export default function Index() {
                 </View>
 
                 {/* Dashboard greeting title */}
-                <View style={{ paddingHorizontal: wide * 6, marginBottom: 18 }}>
+                <View style={{ paddingHorizontal: tabletLayout ? 28 : 18, marginBottom: 18 }}>
                     <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 28, color: c.main.text }}>
                         스마트팜 허브
                     </Text>
@@ -400,7 +402,7 @@ export default function Index() {
                         <ActivityIndicator size="large" color={c.accent} />
                     </View>
                 ) : (
-                    <View style={{ paddingHorizontal: wide * 6, flexDirection: wideLayout ? 'row' : 'column', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 14 }}>
+                    <View style={{ paddingHorizontal: tabletLayout ? 28 : 18, flexDirection: wideLayout ? 'row' : 'column', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 14 }}>
                         {fetchedServers.map((server) => (
                             <ServerCard
                                 key={server.id}
@@ -408,6 +410,7 @@ export default function Index() {
                                 wide={wide}
                                 isDarkTheme={isDark}
                                 wideLayout={wideLayout}
+                                tabletLayout={tabletLayout}
                                 onConfigure={() => router.push({ pathname: '/server/[id]/setting', params: { id: server.id} })}
                             />
                         ))}
@@ -421,7 +424,7 @@ export default function Index() {
                                     borderColor: c.main.outline,
                                     backgroundColor: 'transparent',
                                     width: wideLayout ? '49%' : '100%',
-                                    minHeight: 54,
+                                    minHeight: tabletLayout ? 64 : 58,
                                     borderRadius: 8,
                                 }
                             ]}
