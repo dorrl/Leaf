@@ -32,11 +32,11 @@ export default function CreateServer() {
     }
 
     return (
-        <ScrollView style={{ flex: 1, backgroundColor: c.background }} contentContainerStyle={{ width: '100%', maxWidth: 760, alignSelf: 'center', paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 }}>
+        <ScrollView style={{ flex: 1, backgroundColor: c.background }} contentContainerStyle={{ width: '100%', maxWidth: 680, alignSelf: 'center', paddingHorizontal: 16, paddingTop: 14, paddingBottom: 40 }}>
             <View style={{ paddingTop: 2 }}>
                 <BackButton onPress={() => router.back()} color={c.main.text} backgroundColor={isDark ? 'rgba(255,255,255,0.04)' : '#FFFFFF'} />
             </View>
-            <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 26, color: c.main.text, marginTop: 22 }}>서버 추가</Text>
+            <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 25, color: c.main.text, marginTop: 22 }}>서버 추가</Text>
             <Text style={[styles.heading, { color: c.subText, marginTop: 22 }]}>서버 연결</Text>
             <View style={[styles.card, { backgroundColor: c.main.cover, borderColor: c.main.outline, padding: wide * 4, marginBottom: wide * 3, paddingTop: 0 }]}>
                 <FormField label="이름" value={name} onChangeText={setName} textColor={c.main.text} borderColor={name ? c.main.outline : c.red.outline} labelColor={c.subText} placeholder="(필수)" placeholderColor={c.red.outline} />
