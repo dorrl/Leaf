@@ -38,6 +38,7 @@ function MiniPicoCard({ pico, isServerDark, wide, tabletLayout }: { pico: Pico; 
     const c = isServerDark ? Colors.dark : Colors.light;
     const statusColor = pico.status === 'normal' ? c.green : pico.status === 'wrong' ? c.red : c.sub;
     const lightValueColor = c.orange.text;
+    const picoBackground = pico.status === 'normal' ? c.green.cover : pico.status === 'wrong' ? c.red.cover : c.sub.cover;
     const dotStyle = {
         width: 5,
         height: 5,
@@ -49,17 +50,17 @@ function MiniPicoCard({ pico, isServerDark, wide, tabletLayout }: { pico: Pico; 
         <View style={[
             styles.miniPico,
             {
-                backgroundColor: c.main.cover,
+                backgroundColor: picoBackground,
                 width: tabletLayout ? '24%' : '48%',
                 minHeight: tabletLayout ? 78 : 86,
-                padding: tabletLayout ? 9 : 10,
-                borderRadius: 6,
-                borderColor: c.main.outline,
+                padding: tabletLayout ? 10 : 11,
+                borderRadius: 10,
+                borderColor: statusColor.outline,
                 borderWidth: 1,
                 },
             ]}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: wide * 0.8 }}>
-                <Text style={[styles.miniPicoName, { color: c.main.text, fontSize: 11 }]} numberOfLines={1}>
+                <Text style={[styles.miniPicoName, { color: c.main.text, fontSize: 12 }]} numberOfLines={1}>
                     {pico.name}
                 </Text>
                 {pico.status !== 'disconnected' && <View style={dotStyle} />}
@@ -145,10 +146,13 @@ function ServerCard({ server, wide, isDarkTheme, wideLayout, tabletLayout, onCon
                 {
                     backgroundColor: cardBg,
                     borderColor: cardBorder,
-                    borderRadius: 8,
-                    padding: tabletLayout ? 16 : 14,
-                    shadowOpacity: 0,
-                    elevation: 0,
+                    borderRadius: 16,
+                    padding: tabletLayout ? 17 : 14,
+                    shadowColor: '#10231E',
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: isDark ? 0.18 : 0.06,
+                    shadowRadius: 12,
+                    elevation: isDark ? 2 : 3,
                     borderWidth: server.error ? 1.5 : 1,
                 }
             ]}>
@@ -365,7 +369,7 @@ export default function Index() {
 
                 {/* Dashboard greeting title */}
                 <View style={{ paddingHorizontal: tabletLayout ? 28 : 12, marginBottom: 18 }}>
-                    <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 28, color: c.main.text }}>
+                    <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 27, color: c.main.text }}>
                         스마트팜 허브
                     </Text>
 
@@ -376,7 +380,7 @@ export default function Index() {
                             backgroundColor: c.main.cover,
                             borderColor: c.main.outline,
                             padding: 14,
-                            borderRadius: 8,
+                            borderRadius: 14,
                             marginTop: 12,
                         }
                     ]}>
@@ -425,7 +429,7 @@ export default function Index() {
                                     backgroundColor: 'transparent',
                                     width: wideLayout ? '49%' : '100%',
                                     minHeight: tabletLayout ? 64 : 58,
-                                    borderRadius: 8,
+                                    borderRadius: 14,
                                 }
                             ]}
                         >
@@ -451,9 +455,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerIconContainer: {
-        width: 36,
-        height: 36,
-        borderRadius: 7,
+        width: 38,
+        height: 38,
+        borderRadius: 12,
         borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center',
