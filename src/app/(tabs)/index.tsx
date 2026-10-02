@@ -92,6 +92,7 @@ function ServerCard({ server, wide, isDarkTheme, wideLayout, tabletLayout, onCon
 
     const isDark = isDarkTheme;
     const c = isDark ? Colors.dark : Colors.light;
+    const cardWidth = !tabletLayout ? '74%' : (wideLayout ? '49%' : '100%');
 
     const cardBg = c.main.cover;
     const cardBorder = server.error
@@ -123,7 +124,7 @@ function ServerCard({ server, wide, isDarkTheme, wideLayout, tabletLayout, onCon
     );
 
     return (
-        <Pressable onPress={pressHandler} style={{ width: mobileServerWidth }}>
+        <Pressable onPress={pressHandler} style={{ width: cardWidth }}>
             <Animated.View style={[
                 animStyle,
                 styles.serverCard,
