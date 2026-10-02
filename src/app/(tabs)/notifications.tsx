@@ -50,7 +50,7 @@ function NotificationRow({ item, isDark, showServerName }: { item: NotificationI
         }}
         style={({ pressed }) => ({ backgroundColor: pressed ? c.sub.cover : 'transparent' })}
     >
-        <View style={{ minHeight: 68, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 11, borderBottomWidth: 1, borderBottomColor: c.main.outline, gap: 12 }}>
+        <View style={{ minHeight: 68, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: c.main.outline, gap: 12 }}>
             <View style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: palette.cover, alignItems: 'center', justifyContent: 'center' }}>
                 <Ionicons name={icon} size={18} color={palette.text} />
             </View>
@@ -72,7 +72,7 @@ function NotificationRow({ item, isDark, showServerName }: { item: NotificationI
 
 export default function Notifications() {
     const { width } = useWindowDimensions();
-    const isWideLayout = width >= 900;
+    const isWideLayout = width >= 820;
     const { isDark } = useTheme();
     const c = isDark ? Colors.dark : Colors.light;
     const { servers, getServerApiKey } = useServerAddress();
@@ -183,14 +183,14 @@ export default function Notifications() {
         return () => { active = false; };
     }, [load]);
     return <View style={{ flex: 1, flexDirection: isWideLayout ? 'row' : 'column', backgroundColor: c.background }}>
-        {isWideLayout && <View style={{ width: 224, paddingHorizontal: 12, paddingTop: 22, borderRightWidth: 1, borderRightColor: c.main.outline, backgroundColor: c.main.cover }}>
+        {isWideLayout && <View style={{ width: 216, paddingHorizontal: 12, paddingTop: 24, borderRightWidth: 1, borderRightColor: c.main.outline, backgroundColor: c.main.cover }}>
             <Text style={{ paddingHorizontal: 10, paddingBottom: 10, fontFamily: 'Pretendard-Bold', fontSize: 12, color: c.subText }}>서버</Text>
             {renderServerFilter(null, '모든 서버', items.length)}
             <View style={{ height: 1, backgroundColor: c.main.outline, marginVertical: 10 }} />
             {servers.map(server => renderServerFilter(server.id, server.name, serverCounts[server.id] ?? 0))}
         </View>}
         <View style={{ flex: 1, minWidth: 0 }}>
-            <View style={{ width: '100%', maxWidth: 1120, alignSelf: 'center', paddingHorizontal: isWideLayout ? 28 : 18, paddingTop: isWideLayout ? 24 : 20, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+            <View style={{ width: '100%', maxWidth: 1080, alignSelf: 'center', paddingHorizontal: isWideLayout ? 28 : 16, paddingTop: isWideLayout ? 24 : 20, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
                 <View style={{ flex: 1 }}>
                     <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 23, color: c.main.text }}>알림</Text>
                     <Text style={{ fontFamily: 'Pretendard-Regular', fontSize: 12, color: c.subText, marginTop: 3 }}>
@@ -213,7 +213,7 @@ export default function Notifications() {
             </ScrollView>}
             <ScrollView
                 style={{ flex: 1 }}
-                contentContainerStyle={{ width: '100%', maxWidth: 1120, alignSelf: 'center', paddingHorizontal: isWideLayout ? 16 : 10, paddingBottom: 100 }}
+                contentContainerStyle={{ width: '100%', maxWidth: 1120, alignSelf: 'center', paddingHorizontal: isWideLayout ? 16 : 8, paddingBottom: 100 }}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); void load(); }} tintColor={c.accent} />}
             >
                 {loading ? <ActivityIndicator color={c.accent} style={{ marginTop: 32 }} /> : visibleItems.length ? visibleItems.map(item => <NotificationRow key={`${item.serverId}-${item.id}`} item={item} isDark={isDark} showServerName={!activeServerId} />) : <Text style={{ padding: 18, fontFamily: 'Pretendard-Regular', color: c.subText }}>{items.length ? '이 서버에는 알림이 없습니다.' : '현재 알림이 없습니다.'}</Text>}
