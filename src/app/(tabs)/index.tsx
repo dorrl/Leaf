@@ -217,7 +217,6 @@ export default function Index() {
     const wide = Math.min(Math.min(width, height) * 0.01, 4);
     const tabletLayout = width >= 700;
     const wideLayout = width >= 760;
-    const mobileServerWidth = width < 700 ? '74%' : (wideLayout ? '49%' : '100%');
     const { isDark } = useTheme();
     const c = isDark ? Colors.dark : Colors.light;
     const router = useRouter();
@@ -382,7 +381,7 @@ export default function Index() {
                                 {
                                     borderColor: c.main.outline,
                                     backgroundColor: 'transparent',
-                                    width: mobileServerWidth,
+                                    width: width < 700 ? '74%' : (wideLayout ? '49%' : '100%'),
                                     minHeight: tabletLayout ? 64 : 88,
                                     borderRadius: 14,
                                 }
