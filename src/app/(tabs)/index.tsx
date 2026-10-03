@@ -121,6 +121,7 @@ function ServerCard({ server, wide, isDarkTheme, onConfigure }: {
     isDarkTheme: boolean;
     onConfigure: () => void;
 }) {
+    const { width } = useWindowDimensions();
     const router = useRouter();
     const scale = useSharedValue(1);
 
