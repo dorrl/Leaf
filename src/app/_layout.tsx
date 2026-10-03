@@ -29,11 +29,9 @@ export default function RootLayout() {
 
     useEffect(() => {
         if (!loaded && !error) return;
-        let unsubscribe: (() => void) | undefined;
-        void initializeNotificationForeground().then(() => {
-            unsubscribe = subscribeNotificationForegroundPolling();
-        }).catch(() => {});
-        return () => unsubscribe?.();
+        initializeNotificationForeground();
+        const unsubscribe = subscribeNotificationForegroundPolling();
+        return () => unsubscribe();
     }, [loaded, error]);
 
     useEffect(() => {
