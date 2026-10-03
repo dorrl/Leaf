@@ -1,4 +1,4 @@
-import { initializeNotificationBackground } from '@/services/notificationBackground';
+import { initializeNotificationForeground, subscribeNotificationForegroundPolling } from '@/services/notificationBackground';
 import { ServerAddressProvider } from '@/hooks/useServerAddress';
 import { ThemeProvider } from '@/hooks/useTheme';
 import { useFonts } from 'expo-font';
@@ -24,35 +24,30 @@ export default function RootLayout() {
     });
 
     useEffect(() => {
-        if (Platform.OS === 'android') {
-            NavigationBar.setVisibilityAsync('hidden');
-        }
+        if (Platform.OS === 'android') NavigationBar.setVisibilityAsync('hidden');
     }, []);
 
     useEffect(() => {
         if (!loaded && !error) return;
-
-        void initializeNotificationBackground().catch(() => {
-            // Notification permission/background scheduling should not block app startup.
-        });
+        let unsubscribe: (() => void) | undefined;
+        void initializeNotificationForeground().then(() => {
+            unsubscribe = subscribeNotificationForegroundPolling();
+        }).catch(() => {});
+        return () => unsubscribe?.();
     }, [loaded, error]);
 
     useEffect(() => {
-        if (loaded || error) {
-            SplashScreen.hideAsync();
-        }
+        if (loaded || error) SplashScreen.hideAsync();
     }, [loaded, error]);
 
-    if (!loaded && !error) {
-        return null;
-    }
+    if (!loaded && !error) return null;
 
     return (
         <ThemeProvider>
             <ServerAddressProvider>
                 <Stack screenOptions={{ headerShown: false, navigationBarHidden: true }}>
                     <Stack.Screen name="(tabs)" />
-                    <Stack.Screen name='server' />
+                    <Stack.Screen name="server" />
                 </Stack>
             </ServerAddressProvider>
         </ThemeProvider>

@@ -1,247 +1,62 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as BackgroundTask from 'expo-background-task';
 import * as Notifications from 'expo-notifications';
-import * as TaskManager from 'expo-task-manager';
-import { Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
 
-const BACKGROUND_NOTIFICATION_TASK = 'smartfarm-notification-background-task';
-const SERVER_STORAGE_KEY = '@smartfarm/server-configs';
-const SEEN_STORAGE_KEY = '@smartfarm/background-notification-seen';
-const API_KEY_PREFIX = 'smartfarm-api-key-';
-const ANDROID_CHANNEL_ID = 'smartfarm-alerts';
+const STORAGE_KEY='@smartfarm/server-configs';
+const SEEN_KEY='@smartfarm/foreground-notification-seen';
+const API_PREFIX='smartfarm-api-key-';
+const INTERVAL=30000;
+let timer: ReturnType<typeof setInterval>|null=null;
+let running=false;
 
-type ServerConfig = {
-    id: string;
-    name: string;
-    description: string;
-    address: string;
-};
+type Server={id:string;name:string;address:string};
+type Item={id?:string|number;message?:unknown;picoId?:unknown;picoName?:unknown;createdAt?:unknown};
 
-type RawNotification = {
-    id?: string | number;
-    type?: unknown;
-    level?: unknown;
-    message?: unknown;
-    picoId?: unknown;
-    picoName?: unknown;
-    createdAt?: unknown;
-};
+const key=(id:string)=>{const safe=id.replace(/[^A-Za-z0-9._-]/g,'_');return safe?API_PREFIX+safe:''};
+const itemKey=(sid:string,n:Item)=>n.id!=null?sid+':'+String(n.id):[sid,n.createdAt??'',n.picoId??'',n.message??''].join(':');
 
-function getApiKeyStorageKey(id: string) {
-    const safeId = id.replace(/[^A-Za-z0-9._-]/g, '_');
-    return safeId ? `${API_KEY_PREFIX}${safeId}` : '';
+async function servers():Promise<Server[]>{
+ try{const v=await AsyncStorage.getItem(STORAGE_KEY);const x=v?JSON.parse(v):[];return Array.isArray(x)?x.filter((s):s is Server=>s&&typeof s.id==='string'&&typeof s.name==='string'&&typeof s.address==='string'):[]}catch{return[]}
 }
-
-function getNotificationKey(serverId: string, notification: RawNotification) {
-    if (notification.id !== undefined && notification.id !== null) {
-        return `${serverId}:${String(notification.id)}`;
+async function check(){
+ if(running||AppState.currentState!=='active')return;
+ running=true;
+ try{
+  const list=await servers();if(!list.length)return;
+  const raw=await AsyncStorage.getItem(SEEN_KEY);const seen:Record<string,string[]>=raw?JSON.parse(raw):{};
+  for(const s of list){
+   try{
+    const base=(s.address.startsWith('http')?s.address:'http://'+s.address).replace(/\/+$/,'');
+    const api=await SecureStore.getItemAsync(key(s.id));
+    const res=await fetch(base+'/notifications',{headers:{Accept:'application/json',...(api?{'X-API-Key':api}:{})}});
+    if(!res.ok)continue;
+    const json=await res.json();const notes:Array<Item>=Array.isArray(json?.notifications)?json.notifications:[];
+    const old=new Set(seen[s.id]??[]);
+    if(!seen[s.id]){seen[s.id]=notes.map(n=>itemKey(s.id,n)).slice(-200);continue}
+    for(const n of notes.filter(n=>!old.has(itemKey(s.id,n)))){
+     await Notifications.scheduleNotificationAsync({content:{title:s.name+' · '+(n.picoName||'센서'),body:typeof n.message==='string'?n.message:'새로운 SmartFarm 알림이 도착했습니다.',sound:'default',data:{serverId:s.id,picoId:typeof n.picoId==='string'?n.picoId:''}},trigger:null});
     }
-
-    return [
-        serverId,
-        typeof notification.createdAt === 'string' ? notification.createdAt : '',
-        typeof notification.picoId === 'string' ? notification.picoId : '',
-        typeof notification.message === 'string' ? notification.message : '',
-    ].join(':');
+    seen[s.id]=Array.from(new Set([...old,...notes.map(n=>itemKey(s.id,n))])).slice(-200);
+   }catch{}
+  }
+  await AsyncStorage.setItem(SEEN_KEY,JSON.stringify(seen));
+ }finally{running=false}
 }
+function start(){if(timer)return;void check();timer=setInterval(()=>void check(),INTERVAL)}
+function stop(){if(timer){clearInterval(timer);timer=null}}
 
-function getNotificationText(notification: RawNotification) {
-    return typeof notification.message === 'string' && notification.message
-        ? notification.message
-        : '새로운 SmartFarm 알림이 도착했습니다.';
+export async function initializeNotificationForeground(){
+ if(Platform.OS==='web')return false;
+ if(Platform.OS==='android')await Notifications.setNotificationChannelAsync('smartfarm-alerts',{name:'SmartFarm 알림',importance:Notifications.AndroidImportance.HIGH,sound:'default'});
+ const p=await Notifications.getPermissionsAsync();
+ const permission=p.granted?p:await Notifications.requestPermissionsAsync({ios:{allowAlert:true,allowBadge:true,allowSound:true}});
+ if(!permission.granted)return false;
+ if(AppState.currentState==='active')start();
+ return true;
 }
-
-function getNotificationTitle(server: ServerConfig, notification: RawNotification) {
-    const picoName = typeof notification.picoName === 'string' && notification.picoName
-        ? notification.picoName
-        : '센서';
-
-    return `${server.name} · ${picoName}`;
-}
-
-async function loadServers(): Promise<ServerConfig[]> {
-    try {
-        const saved = await AsyncStorage.getItem(SERVER_STORAGE_KEY);
-        if (!saved) return [];
-
-        const parsed: unknown = JSON.parse(saved);
-        if (!Array.isArray(parsed)) return [];
-
-        return parsed.filter((item): item is ServerConfig =>
-            !!item
-            && typeof item === 'object'
-            && typeof (item as ServerConfig).id === 'string'
-            && typeof (item as ServerConfig).name === 'string'
-            && typeof (item as ServerConfig).description === 'string'
-            && typeof (item as ServerConfig).address === 'string'
-        );
-    } catch {
-        return [];
-    }
-}
-
-async function loadSeenNotifications(): Promise<Record<string, string[]>> {
-    try {
-        const saved = await AsyncStorage.getItem(SEEN_STORAGE_KEY);
-        if (!saved) return {};
-
-        const parsed: unknown = JSON.parse(saved);
-        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
-
-        return parsed as Record<string, string[]>;
-    } catch {
-        return {};
-    }
-}
-
-async function saveSeenNotifications(seen: Record<string, string[]>) {
-    await AsyncStorage.setItem(SEEN_STORAGE_KEY, JSON.stringify(seen));
-}
-
-async function getServerNotifications(server: ServerConfig): Promise<RawNotification[]> {
-    const address = server.address.trim();
-    if (!address) return [];
-
-    const base = (address.startsWith('http') ? address : `http://${address}`).replace(/\\/+$/, '');
-    const apiKeyKey = getApiKeyStorageKey(server.id);
-    const apiKey = apiKeyKey ? await (await import('expo-secure-store')).getItemAsync(apiKeyKey) : null;
-
-    const response = await fetch(`${base}/notifications`, {
-        headers: {
-            Accept: 'application/json',
-            ...(apiKey ? { 'X-API-Key': apiKey } : {}),
-        },
-    });
-
-    if (!response.ok) return [];
-
-    const json: unknown = await response.json();
-    if (!json || typeof json !== 'object') return [];
-
-    const notifications = (json as { notifications?: unknown }).notifications;
-    return Array.isArray(notifications)
-        ? notifications.filter((item): item is RawNotification => !!item && typeof item === 'object')
-        : [];
-}
-
-async function checkForNewNotifications() {
-    const servers = await loadServers();
-    if (!servers.length) return false;
-
-    const seen = await loadSeenNotifications();
-    let hasNewData = false;
-
-    for (const server of servers) {
-        let notifications: RawNotification[] = [];
-
-        try {
-            notifications = await getServerNotifications(server);
-        } catch {
-            continue;
-        }
-
-        const keys = notifications.map(notification => getNotificationKey(server.id, notification));
-        const previous = new Set(seen[server.id] ?? []);
-
-        // The first background check for a server establishes a baseline.
-        // Existing notifications should not suddenly generate a burst of alerts.
-        if (!seen[server.id]) {
-            seen[server.id] = keys.slice(-200);
-            hasNewData = true;
-            continue;
-        }
-
-        const newNotifications = notifications.filter(notification =>
-            !previous.has(getNotificationKey(server.id, notification))
-        );
-
-        for (const notification of newNotifications) {
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: getNotificationTitle(server, notification),
-                    body: getNotificationText(notification),
-                    sound: 'default',
-                    data: {
-                        serverId: server.id,
-                        picoId: typeof notification.picoId === 'string' ? notification.picoId : '',
-                    },
-                },
-                trigger: null,
-            });
-        }
-
-        if (newNotifications.length > 0) hasNewData = true;
-        seen[server.id] = [...new Set([...previous, ...keys])].slice(-200);
-    }
-
-    await saveSeenNotifications(seen);
-    return hasNewData;
-}
-
-TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async () => {
-    try {
-        await checkForNewNotifications();
-        return BackgroundTask.BackgroundTaskResult.Success;
-    } catch {
-        return BackgroundTask.BackgroundTaskResult.Failed;
-    }
-});
-
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldShowBanner: true,
-        shouldShowList: true,
-        shouldPlaySound: true,
-        shouldSetBadge: false,
-    }),
-});
-
-async function configureNotificationChannel() {
-    if (Platform.OS !== 'android') return;
-
-    await Notifications.setNotificationChannelAsync(ANDROID_CHANNEL_ID, {
-        name: 'SmartFarm 알림',
-        importance: Notifications.AndroidImportance.HIGH,
-        vibrationPattern: [0, 250, 250, 250],
-        sound: 'default',
-    });
-}
-
-export async function initializeNotificationBackground() {
-    if (Platform.OS === 'web') return false;
-
-    await configureNotificationChannel();
-
-    const current = await Notifications.getPermissionsAsync();
-    const permission = current.granted
-        ? current
-        : await Notifications.requestPermissionsAsync({
-            ios: {
-                allowAlert: true,
-                allowBadge: true,
-                allowSound: true,
-            },
-        });
-
-    if (!permission.granted) return false;
-
-    const status = await BackgroundTask.getStatusAsync();
-    if (status !== BackgroundTask.BackgroundTaskStatus.Available) return false;
-
-    const registered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_NOTIFICATION_TASK);
-    if (!registered) {
-        await BackgroundTask.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK, {
-            minimumInterval: 15,
-        });
-    }
-
-    return true;
-}
-
-export async function triggerNotificationBackgroundTaskForTesting() {
-    if (__DEV__ && Platform.OS !== 'web') {
-        return BackgroundTask.triggerTaskWorkerForTestingAsync();
-    }
-
-    return false;
+export function subscribeNotificationForegroundPolling(){
+ const sub=AppState.addEventListener('change',s=>s==='active'?start():stop());
+ if(AppState.currentState==='active')start();
+ return()=>{sub.remove();stop()};
 }
