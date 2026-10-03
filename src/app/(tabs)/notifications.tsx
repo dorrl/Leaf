@@ -211,13 +211,17 @@ export default function Notifications() {
                 {renderServerFilter(null, '모든 서버', items.length)}
                 {servers.map(server => renderServerFilter(server.id, server.name, serverCounts[server.id] ?? 0))}
             </ScrollView>}
-            <ScrollView
-                style={{ flex: 1 }}
-                contentContainerStyle={{ width: '100%', maxWidth: 1120, alignSelf: 'center', paddingHorizontal: isWideLayout ? 16 : 8, paddingBottom: 100 }}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); void load(); }} tintColor={c.accent} />}
-            >
-                {loading ? <ActivityIndicator color={c.accent} style={{ marginTop: 32 }} /> : visibleItems.length ? visibleItems.map(item => <NotificationRow key={`${item.serverId}-${item.id}`} item={item} isDark={isDark} showServerName={!activeServerId} />) : <Text style={{ padding: 18, fontFamily: 'Pretendard-Regular', color: c.subText }}>{items.length ? '이 서버에는 알림이 없습니다.' : '현재 알림이 없습니다.'}</Text>}
-            </ScrollView>
+            <View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
+                <ScrollView
+                    style={{ flex: 1, width: '100%' }}
+                    contentContainerStyle={{ paddingHorizontal: isWideLayout ? 16 : 8, paddingBottom: 100 }}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); void load(); }} tintColor={c.accent} colors={[c.accent]} />}
+                >
+                    <View style={{ width: '100%', maxWidth: 1120, alignSelf: 'center' }}>
+                        {loading ? <ActivityIndicator color={c.accent} style={{ marginTop: 32 }} /> : visibleItems.length ? visibleItems.map(item => <NotificationRow key={`${item.serverId}-${item.id}`} item={item} isDark={isDark} showServerName={!activeServerId} />) : <Text style={{ padding: 18, fontFamily: 'Pretendard-Regular', color: c.subText }}>{items.length ? '이 서버에는 알림이 없습니다.' : '현재 알림이 없습니다.'}</Text>}
+                    </View>
+                </ScrollView>
+            </View>
         </View>
         <ConfirmModal
             visible={deleteModalVisible}

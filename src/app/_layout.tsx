@@ -1,3 +1,4 @@
+import { NotificationPollingRuntime } from '@/hooks/useNotificationPolling';
 import { ServerAddressProvider } from '@/hooks/useServerAddress';
 import { ThemeProvider } from '@/hooks/useTheme';
 import { useFonts } from 'expo-font';
@@ -33,7 +34,8 @@ export default function RootLayout() {
     return (
         <ThemeProvider>
             <ServerAddressProvider>
-                <Stack screenOptions={{ headerShown: false }}>
+                <NotificationPollingRuntime />
+                <Stack screenOptions={{ headerShown: false, navigationBarHidden: true }}>
                     <Stack.Screen name="(tabs)" />
                     <Stack.Screen name='server' />
                 </Stack>

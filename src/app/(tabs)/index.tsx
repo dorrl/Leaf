@@ -121,13 +121,12 @@ function ServerCard({ server, wide, isDarkTheme, onConfigure }: {
     isDarkTheme: boolean;
     onConfigure: () => void;
 }) {
-    const { width } = useWindowDimensions();
     const router = useRouter();
     const scale = useSharedValue(1);
 
     const isDark = isDarkTheme;
     const c = isDark ? Colors.dark : Colors.light;
-    const cardWidth = width < 600 ? '100%' : (wide >= 3.9 ? '48%' : (wide >= 3.0 ? '82%' : '100%'));
+    const cardWidth = wide >= 3.9 ? '48%' : (wide >= 3.0 ? '82%' : '100%');
 
     const cardBg = c.main.cover;
     const cardBorder = server.error
@@ -350,7 +349,11 @@ export default function Index() {
     }, [servers]);
 
     useEffect(() => {
-        loadData();
+        let active = true;
+        void Promise.resolve().then(() => {
+            if (active) void loadData();
+        });
+        return () => { active = false; };
     }, [loadData]);
 
     useEffect(() => {
@@ -400,7 +403,7 @@ export default function Index() {
     const totalPicos = fetchedServers.reduce((acc, s) => acc + s.picos.length, 0);
     const wrongPicos = fetchedServers.reduce((acc, s) => acc + s.picos.filter(p => p.status === 'wrong').length, 0);
     const offlineServers = fetchedServers.filter(s => s.error).length;
-    const dashboardCardWidth = width < 600 ? '100%' : (wide >= 3.9 ? '52%' : (wide >= 3.0 ? '88%' : '100%'));
+    const dashboardCardWidth = wide >= 3.9 ? '52%' : (wide >= 3.0 ? '88%' : '100%');
 
     return (
         <View style={{ flex: 1, backgroundColor: c.background }}>
@@ -427,8 +430,8 @@ export default function Index() {
                 </View>
 
                 {/* Dashboard greeting title */}
-                <View style={{ width: '100%', maxWidth: 980, paddingHorizontal: wide >= 3.0 ? 28 : 20, marginBottom: wide * 5, alignItems: 'flex-start' }}>
-                    <Text style={{ width: '100%', fontFamily: 'Pretendard-Bold', fontSize: wide * 7, color: c.main.text }}>
+                <View style={{ width: '100%', maxWidth: 980, paddingHorizontal: wide >= 3.0 ? 28 : 20, marginBottom: wide * 5 }}>
+                    <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: wide * 7, color: c.main.text }}>
                         스마트팜 허브
                     </Text>
 
@@ -468,7 +471,7 @@ export default function Index() {
                         <ActivityIndicator size="large" color={c.accent} />
                     </View>
                 ) : (
-                    <View style={{ width: '100%', maxWidth: 980, paddingHorizontal: wide >= 3.0 ? 28 : 20, gap: wide >= 3.9 ? 18 : 20, alignItems: 'flex-start' }}>
+                    <View style={{ width: '100%', maxWidth: 980, paddingHorizontal: wide >= 3.0 ? 28 : 20, gap: wide >= 3.9 ? 18 : 20, alignItems: wide >= 3.9 ? 'stretch' : 'center' }}>
                         {fetchedServers.map((server) => (
                             <ServerCard
                                 key={server.id}

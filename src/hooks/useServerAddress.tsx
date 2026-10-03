@@ -1,3 +1,4 @@
+import { SERVER_CONFIGS_STORAGE_KEY } from '@/constants/storageKeys';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
@@ -24,8 +25,6 @@ const ServerAddressContext = createContext<ServerAddressContextType | undefined>
 
 const INITIAL_SERVERS: ServerConfig[] = [];
 
-const STORAGE_KEY = '@smartfarm/server-configs';
-
 const getApiKeyStorageKey = (id: string) => {
     const safeId = id.replace(/[^A-Za-z0-9._-]/g, '_');
     return safeId ? `smartfarm-api-key-${safeId}` : '';
@@ -36,7 +35,7 @@ export function ServerAddressProvider({ children }: { children: React.ReactNode 
     const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
-        AsyncStorage.getItem(STORAGE_KEY)
+        AsyncStorage.getItem(SERVER_CONFIGS_STORAGE_KEY)
             .then((saved) => {
                 if (!saved) return;
                 const parsed: unknown = JSON.parse(saved);
@@ -50,7 +49,7 @@ export function ServerAddressProvider({ children }: { children: React.ReactNode 
                         return server;
                     });
                     setServers(migrated);
-                    void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+                    void AsyncStorage.setItem(SERVER_CONFIGS_STORAGE_KEY, JSON.stringify(migrated));
                 }
             })
             .catch(() => {
@@ -61,7 +60,7 @@ export function ServerAddressProvider({ children }: { children: React.ReactNode 
 
     const save = (next: ServerConfig[]) => {
         setServers(next);
-        void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+        void AsyncStorage.setItem(SERVER_CONFIGS_STORAGE_KEY, JSON.stringify(next));
     };
 
     const getServerApiKey = useCallback((id: string) => {
