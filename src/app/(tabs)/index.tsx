@@ -126,7 +126,7 @@ function ServerCard({ server, wide, isDarkTheme, onConfigure }: {
 
     const isDark = isDarkTheme;
     const c = isDark ? Colors.dark : Colors.light;
-    const cardWidth = wide >= 3.9 ? '48%' : (wide >= 3.0 ? '82%' : '100%');
+    const cardWidth = width < 600 ? '100%' : (wide >= 3.9 ? '48%' : (wide >= 3.0 ? '82%' : '100%'));
 
     const cardBg = c.main.cover;
     const cardBorder = server.error
@@ -399,7 +399,7 @@ export default function Index() {
     const totalPicos = fetchedServers.reduce((acc, s) => acc + s.picos.length, 0);
     const wrongPicos = fetchedServers.reduce((acc, s) => acc + s.picos.filter(p => p.status === 'wrong').length, 0);
     const offlineServers = fetchedServers.filter(s => s.error).length;
-    const dashboardCardWidth = wide >= 3.9 ? '52%' : (wide >= 3.0 ? '88%' : '100%');
+    const dashboardCardWidth = width < 600 ? '100%' : (wide >= 3.9 ? '52%' : (wide >= 3.0 ? '88%' : '100%'));
 
     return (
         <View style={{ flex: 1, backgroundColor: c.background }}>
