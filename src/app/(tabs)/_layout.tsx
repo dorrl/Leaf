@@ -2,7 +2,36 @@ import { Colors } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+import { useEffect } from 'react';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Platform, View } from 'react-native';
+
+function TabIcon({ focused, color, iconName, isDark }: { focused: boolean; color: string; iconName: keyof typeof Ionicons.glyphMap; isDark: boolean }) {
+    const scale = useSharedValue(focused ? 1 : 0.92);
+
+    useEffect(() => {
+        scale.value = withSpring(focused ? 1 : 0.92, { damping: 15, stiffness: 300 });
+    }, [focused, scale]);
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: scale.value }],
+    }), [scale]);
+
+    return (
+        <Animated.View style={[{
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 32,
+            height: 28,
+            borderRadius: 7,
+            backgroundColor: focused
+                ? (isDark ? 'rgba(135,146,247,0.18)' : 'rgba(88,101,242,0.1)')
+                : 'transparent',
+        }, animatedStyle]}>
+            <Ionicons name={iconName} size={19} color={color} />
+        </Animated.View>
+    );
+}
 
 export default function TabsLayout() {
     const { isDark } = useTheme();
@@ -45,21 +74,7 @@ export default function TabsLayout() {
                     } else if (route.name === 'settings') {
                         iconName = focused ? 'settings' : 'settings-outline';
                     }
-                    return (
-                        <View style={{
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: 32,
-                            height: 28,
-
-                            borderRadius: 7,
-                            backgroundColor: focused
-                                ? (isDark ? 'rgba(135,146,247,0.18)' : 'rgba(88,101,242,0.1)')
-                                : 'transparent',
-                        }}>
-                            <Ionicons name={iconName} size={19} color={color} />
-                        </View>
-                    );
+                    return <TabIcon focused={focused} color={color} iconName={iconName} isDark={isDark} />;
                 },
             })}
         >

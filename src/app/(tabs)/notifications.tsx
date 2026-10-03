@@ -1,11 +1,12 @@
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { Colors } from '@/constants/Colors';
+import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { useServerAddress } from '@/hooks/useServerAddress';
 import { useTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 type NotificationType = 'warning' | 'info' | 'error';
 type NotificationItem = {
@@ -41,7 +42,7 @@ function NotificationRow({ item, isDark, showServerName }: { item: NotificationI
         ? new Date(timestamp).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
         : '';
 
-    return <Pressable
+    return <AnimatedPressable
         accessibilityRole="button"
         accessibilityLabel={`${item.serverName}, ${item.picoName}, ${typeLabel}. ${item.message}`}
         onPress={() => {
@@ -67,7 +68,7 @@ function NotificationRow({ item, isDark, showServerName }: { item: NotificationI
             <Text style={{ fontFamily: 'Pretendard-Regular', fontSize: 11, color: c.subText, minWidth: 72, textAlign: 'right' }}>{time}</Text>
             <Ionicons name="chevron-forward" size={16} color={c.subText} />
         </View>
-    </Pressable>;
+    </AnimatedPressable>;
 }
 
 export default function Notifications() {
@@ -139,7 +140,7 @@ export default function Notifications() {
 
     const renderServerFilter = (serverId: string | null, label: string, count: number) => {
         const selected = activeServerId === serverId;
-        return <Pressable
+        return <AnimatedPressable
             key={serverId ?? 'all'}
             accessibilityRole="button"
             accessibilityState={{ selected }}
@@ -148,7 +149,7 @@ export default function Notifications() {
         >
             <Text style={{ fontFamily: selected ? 'Pretendard-SemiBold' : 'Pretendard-Medium', fontSize: 13, color: selected ? c.main.text : c.subText, marginRight: 10 }} numberOfLines={1}>{label}</Text>
             <Text style={{ fontFamily: 'Pretendard-Medium', fontSize: 11, color: selected ? c.main.text : c.subText }}>{count}</Text>
-        </Pressable>;
+        </AnimatedPressable>;
     };
 
     const deleteNotifications = async () => {
@@ -197,7 +198,7 @@ export default function Notifications() {
                         {selectedServer?.name ?? '모든 서버'} · {visibleItems.length}개
                     </Text>
                 </View>
-                <Pressable
+                <AnimatedPressable
                     accessibilityRole="button"
                     accessibilityLabel="전체 알림 삭제"
                     disabled={deleting || items.length === 0}
@@ -205,7 +206,7 @@ export default function Notifications() {
                     style={({ pressed }) => ({ width: 38, height: 38, alignItems: 'center', justifyContent: 'center', borderRadius: 6, backgroundColor: pressed ? c.red.cover : 'transparent', opacity: deleting || items.length === 0 ? 0.4 : 1 })}
                 >
                     {deleting ? <ActivityIndicator size="small" color={c.red.text} /> : <Ionicons name="trash-outline" size={18} color={c.red.text} />}
-                </Pressable>
+                </AnimatedPressable>
             </View>
             {!isWideLayout && <ScrollView
                 horizontal

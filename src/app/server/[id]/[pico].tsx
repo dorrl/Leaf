@@ -1,4 +1,5 @@
 import { Colors } from '@/constants/Colors';
+import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { usePico, type PicoReadingPeriod } from '@/hooks/usePico';
 import { useServerAddress } from '@/hooks/useServerAddress';
 import { useTheme } from '@/hooks/useTheme';
@@ -8,7 +9,7 @@ import { getCompleteLightExposureDays, getDailyLightExposureHours, getLocalDayKe
 import { Entypo, Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View, type GestureResponderEvent, type KeyboardTypeOptions } from 'react-native';
+import { ActivityIndicator, Modal, RefreshControl, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View, type GestureResponderEvent, type KeyboardTypeOptions } from 'react-native';
 import Svg, { Line, Path, Rect } from 'react-native-svg';
 
 type Period = PicoReadingPeriod;
@@ -510,22 +511,22 @@ export default function PicoStatus() {
             }>
                 { /* back & title */ }
                 <View style={[styles.header, { paddingTop: wide * 3, paddingBottom: wide * 2 }]}>
-                    <Pressable accessibilityRole="button" accessibilityLabel="뒤로가기" onPress={() => router.back()} style={[styles.headerIcon, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
+                    <AnimatedPressable accessibilityRole="button" accessibilityLabel="뒤로가기" onPress={() => router.back()} style={[styles.headerIcon, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
                         <Ionicons name="chevron-back" size={wide * 5} color={c.main.text} />
-                    </Pressable>
+                    </AnimatedPressable>
                     <View style={{ flex: 1 }} />
                 </View>
 
                 <View style={{ paddingBottom: wide * 3 }}>
                     <View style={[{ flexDirection: 'row' }]}>
                         <Text style={{ color: c.main.text, fontFamily: 'Pretendard-Bold', fontSize: wide * 7 }} numberOfLines={1}>{current?.name || picoId || 'Pico'}</Text>
-                        <Pressable accessibilityRole="button" accessibilityLabel="이름 변경" onPress={openRenameMenu} style={[styles.headerIcon, { marginLeft: wide * 5, backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
+                        <AnimatedPressable accessibilityRole="button" accessibilityLabel="이름 변경" onPress={openRenameMenu} style={[styles.headerIcon, { marginLeft: wide * 5, backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
                             <Entypo name="pencil" size={wide * 7} color={c.main.text} />
-                        </Pressable>
+                        </AnimatedPressable>
                     </View>
                     <Text style={{ color: c.subText, fontFamily: 'Pretendard-Regular', fontSize: wide * 2.8, marginTop: wide }}>최근 업데이트 · {updatedAt}</Text>
                 </View>
-                {error && <View style={[styles.errorBanner, { backgroundColor: isDark ? 'rgba(248,113,113,0.08)' : '#FEF2F2', borderColor: isDark ? 'rgba(248,113,113,0.2)' : '#FECACA' }]}><Ionicons name="warning-outline" size={wide * 4} color={c.red.text} /><Text style={{ flex: 1, color: c.red.text, fontFamily: 'Pretendard-Medium', fontSize: wide * 2.8, marginLeft: wide * 2 }}>{error}</Text><Pressable accessibilityRole="button" accessibilityLabel="다시 불러오기" onPress={() => void loadReadings()}><Ionicons name="refresh" size={wide * 4.5} color={c.red.text} /></Pressable></View>}
+                {error && <View style={[styles.errorBanner, { backgroundColor: isDark ? 'rgba(248,113,113,0.08)' : '#FEF2F2', borderColor: isDark ? 'rgba(248,113,113,0.2)' : '#FECACA' }]}><Ionicons name="warning-outline" size={wide * 4} color={c.red.text} /><Text style={{ flex: 1, color: c.red.text, fontFamily: 'Pretendard-Medium', fontSize: wide * 2.8, marginLeft: wide * 2 }}>{error}</Text><AnimatedPressable accessibilityRole="button" accessibilityLabel="다시 불러오기" onPress={() => void loadReadings()}><Ionicons name="refresh" size={wide * 4.5} color={c.red.text} /></AnimatedPressable></View>}
                 {loading ? <View style={[styles.centered, { paddingVertical: wide * 16 }]}><ActivityIndicator size="large" color={c.accent} /></View> : (
                     <>
                         <View style={[styles.section, { backgroundColor: c.main.cover, borderColor: c.main.outline, padding: wide * 4, marginBottom: wide * 4 }]}>
@@ -545,7 +546,7 @@ export default function PicoStatus() {
                         <View style={[styles.section, { backgroundColor: c.main.cover, borderColor: c.main.outline, padding: wide * 4, overflow: 'hidden' }]}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: wide * 2 }}>
                                 <Text style={{ color: c.main.text, fontFamily: 'Pretendard-SemiBold', fontSize: wide * 4 }}>센서 기록</Text>
-                                <Pressable accessibilityRole="button" accessibilityLabel="그래프 기간 선택" onPress={() => setPeriodMenuOpen(true)} style={[styles.periodButton, { borderColor: c.main.outline, backgroundColor: c.sub.cover }]}><Text style={{ color: c.main.text, fontFamily: 'Pretendard-Medium', fontSize: wide * 2.8 }}>{selectedPeriod.label}</Text><Ionicons name="chevron-down" size={wide * 3.2} color={c.subText} /></Pressable>
+                                <AnimatedPressable accessibilityRole="button" accessibilityLabel="그래프 기간 선택" onPress={() => setPeriodMenuOpen(true)} style={[styles.periodButton, { borderColor: c.main.outline, backgroundColor: c.sub.cover }]}><Text style={{ color: c.main.text, fontFamily: 'Pretendard-Medium', fontSize: wide * 2.8 }}>{selectedPeriod.label}</Text><Ionicons name="chevron-down" size={wide * 3.2} color={c.subText} /></AnimatedPressable>
                             </View>
                             {readings.length === 0 ? <Text style={{ color: c.subText, fontFamily: 'Pretendard-Regular', paddingVertical: wide * 5 }}>선택한 기간에 측정 기록이 없습니다.</Text> : metrics.map(metric => <MetricChart key={metric.key} metric={metric} readings={readings} chartWidth={chartWidth} wide={wide} isDark={isDark} optimalRange={current?.optimalRange} nowTimestamp={latestTimestamp ?? 0} onInteractionChange={setChartTouchActive} />)}
                         </View>
@@ -593,9 +594,9 @@ export default function PicoStatus() {
                                 labelColor={c.subText}
                                 onRangeChange={changeRangePair('lightMinDurationHours', 'lightMaxDurationHours')}
                             />
-                            <Pressable onPress={() => void saveOptimalRange()} disabled={rangeSaving} style={[styles.rangeSaveButton, { backgroundColor: c.accent, opacity: rangeSaving ? 0.6 : 1 }]}>
+                            <AnimatedPressable onPress={() => void saveOptimalRange()} disabled={rangeSaving} style={[styles.rangeSaveButton, { backgroundColor: c.accent, opacity: rangeSaving ? 0.6 : 1 }]}>
                                 <Text style={{ color: '#FFFFFF', fontFamily: 'Pretendard-Bold' }}>{rangeSaving ? '저장 중...' : '적정 범위 확인 및 저장'}</Text>
-                            </Pressable>
+                            </AnimatedPressable>
                             {rangeMessage && <Text style={{ color: rangeMessage.includes('저장했습니다') ? c.green.text : c.red.text, fontFamily: 'Pretendard-Medium', fontSize: wide * 2.7, marginTop: wide * 2 }}>{rangeMessage}</Text>}
                         </View>
                     </>
@@ -604,22 +605,22 @@ export default function PicoStatus() {
 
             { /* period popup */ }
             <Modal visible={periodMenuOpen} transparent animationType="fade" onRequestClose={() => setPeriodMenuOpen(false)}>
-                <Pressable style={styles.modalBackdrop} onPress={() => setPeriodMenuOpen(false)}>
+                <AnimatedPressable style={styles.modalBackdrop} onPress={() => setPeriodMenuOpen(false)}>
                     <View style={[styles.periodMenu, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
                         <Text style={{ color: c.main.text, fontFamily: 'Pretendard-Bold', fontSize: wide * 4, marginBottom: wide * 2 }}>기간 선택</Text>
                         {periods.map(option => (
-                            <Pressable key={option.id} onPress={() => { setLoading(true); setPeriod(option.id); setPeriodMenuOpen(false); }} style={[styles.periodOption, { borderTopColor: c.main.outline }]}>
+                            <AnimatedPressable key={option.id} onPress={() => { setLoading(true); setPeriod(option.id); setPeriodMenuOpen(false); }} style={[styles.periodOption, { borderTopColor: c.main.outline }]}>
                                 <Text style={{ color: period === option.id ? c.accent : c.main.text, fontFamily: period === option.id ? 'Pretendard-Bold' : 'Pretendard-Regular', fontSize: wide * 3.2 }}>{option.label}</Text>
                                 {period === option.id && <Ionicons name="checkmark" size={wide * 4} color={c.accent} />}
-                            </Pressable>
+                            </AnimatedPressable>
                         ))}
                     </View>
-                </Pressable>
+                </AnimatedPressable>
             </Modal>
 
             <Modal visible={renameMenuOpen} transparent animationType="fade" onRequestClose={() => { if (!renameSaving) setRenameMenuOpen(false); }}>
-                <Pressable style={styles.modalBackdrop} onPress={() => { if (!renameSaving) setRenameMenuOpen(false); }}>
-                    <Pressable style={[styles.renameDialog, { backgroundColor: c.main.cover, borderColor: c.main.outline }]} onPress={event => event.stopPropagation()}>
+                <AnimatedPressable style={styles.modalBackdrop} onPress={() => { if (!renameSaving) setRenameMenuOpen(false); }}>
+                    <AnimatedPressable style={[styles.renameDialog, { backgroundColor: c.main.cover, borderColor: c.main.outline }]} onPress={event => event.stopPropagation()}>
                         <Text style={{ color: c.main.text, fontFamily: 'Pretendard-Bold', fontSize: wide * 4.5 }}>Pico 이름 변경</Text>
                         <Text style={{ color: c.subText, fontFamily: 'Pretendard-Regular', fontSize: wide * 2.8, marginTop: wide * 1.5 }}>새 이름을 입력하세요.</Text>
                         <TextInput
@@ -637,15 +638,15 @@ export default function PicoStatus() {
                         />
                         {renameError && <Text style={{ color: c.red.text, fontFamily: 'Pretendard-Regular', fontSize: wide * 2.7, marginTop: wide * 1.5 }}>{renameError}</Text>}
                         <View style={styles.renameActions}>
-                            <Pressable disabled={renameSaving} onPress={() => setRenameMenuOpen(false)} style={[styles.renameButton, { borderColor: c.main.outline }]}>
+                            <AnimatedPressable disabled={renameSaving} onPress={() => setRenameMenuOpen(false)} style={[styles.renameButton, { borderColor: c.main.outline }]}>
                                 <Text style={{ color: c.main.text, fontFamily: 'Pretendard-SemiBold' }}>취소</Text>
-                            </Pressable>
-                            <Pressable disabled={renameSaving || !renameValue.trim()} onPress={() => void savePicoName()} style={[styles.renameButton, { backgroundColor: c.accent, opacity: renameSaving || !renameValue.trim() ? 0.55 : 1 }]}>
+                            </AnimatedPressable>
+                            <AnimatedPressable disabled={renameSaving || !renameValue.trim()} onPress={() => void savePicoName()} style={[styles.renameButton, { backgroundColor: c.accent, opacity: renameSaving || !renameValue.trim() ? 0.55 : 1 }]}>
                                 <Text style={{ color: '#FFFFFF', fontFamily: 'Pretendard-Bold' }}>{renameSaving ? '변경 중...' : '확인'}</Text>
-                            </Pressable>
+                            </AnimatedPressable>
                         </View>
-                    </Pressable>
-                </Pressable>
+                    </AnimatedPressable>
+                </AnimatedPressable>
             </Modal>
             
         </View>

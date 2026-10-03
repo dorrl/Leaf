@@ -1,4 +1,5 @@
 import { Colors } from '@/constants/Colors';
+import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { BackButton } from '@/components/BackButton';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { FormField } from '@/components/FormField';
@@ -7,7 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { clearServerSnapshot } from '@/utils/localData';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 type RuntimeSettings = { measurementIntervalMinutes: number; syncIntervalMinutes: number; retentionMonths: number };
 
@@ -75,12 +76,12 @@ function ServerRuntimeSettings({ server, wide, c }: { server: ServerConfig; wide
             <Text style={[styles.fixedValue, { color: c.sub.text, borderColor: c.main.outline }]}>1분마다 측정</Text>
             <FormField label="서버 저장·앱 갱신 주기 (분)" value={String(settings.syncIntervalMinutes)} onChangeText={value => setSettings(current => ({ ...current, syncIntervalMinutes: Number(value) }))} textColor={c.main.text} borderColor={c.main.outline} labelColor={c.subText} keyboardType="number-pad" />
             <FormField label="측정값 보관 기간 (개월)" value={String(settings.retentionMonths)} onChangeText={value => setSettings(current => ({ ...current, retentionMonths: Number(value) }))} textColor={c.main.text} borderColor={c.main.outline} labelColor={c.subText} keyboardType="number-pad" />
-            <Pressable onPress={save} disabled={saving} style={[styles.saveButton, saving ? styles.disabled : {}, { backgroundColor: c.accent }]}>
+            <AnimatedPressable onPress={save} disabled={saving} style={[styles.saveButton, saving ? styles.disabled : {}, { backgroundColor: c.accent }]}>
                 <Text style={styles.saveText}>{saving ? '저장 중...' : '서버 설정 저장'}</Text>
-            </Pressable>
-            <Pressable onPress={() => setShowDeleteModal(true)} disabled={saving} style={[styles.deleteButton, saving ? styles.disabled : {}, { borderColor: c.red.text}]}>
+            </AnimatedPressable>
+            <AnimatedPressable onPress={() => setShowDeleteModal(true)} disabled={saving} style={[styles.deleteButton, saving ? styles.disabled : {}, { borderColor: c.red.text}]}>
                 <Text style={[styles.deleteText, { color: c.red.text }]}>저장된 측정 데이터 삭제</Text>
-            </Pressable>
+            </AnimatedPressable>
             {!!message && <Text style={{ color: c.subText, fontFamily: 'Pretendard-Regular', fontSize: wide * 2.7, marginTop: wide * 2 }}>{message}</Text>}
         </>}
         <ConfirmModal visible={showDeleteModal} title="서버 측정 데이터 삭제" message={`${server.name} 서버에 저장된 모든 측정값과 알림을 삭제합니다. 센서와 측정 주기 설정은 유지됩니다.`} onCancel={() => setShowDeleteModal(false)} onConfirm={() => void deleteSavedData()} c={c} />
@@ -103,7 +104,7 @@ function ServerAddressForm({ server, wide, c }: { server: ServerConfig; wide: nu
             <FormField label="설명" value={description} onChangeText={setDescription} textColor={c.main.text} borderColor={c.main.outline} labelColor={c.subText} />
             <FormField label="주소" value={address} onChangeText={setAddress} textColor={c.main.text} borderColor={address ? c.main.outline : c.red.outline} labelColor={c.subText} placeholder="(필수)" placeholderColor={c.red.outline} autoCapitalize="none" />
             <FormField label="서버 API 키" value={apiKey} onChangeText={setApiKey} textColor={c.main.text} borderColor={c.main.outline} labelColor={c.subText} placeholder="(설정 변경·삭제용)" placeholderColor={c.subText} secureTextEntry autoCapitalize="none" />
-            <Pressable style={[styles.saveButton, disabled ? styles.disabled : {}, { backgroundColor: c.accent }]} disabled={disabled}
+            <AnimatedPressable style={[styles.saveButton, disabled ? styles.disabled : {}, { backgroundColor: c.accent }]} disabled={disabled}
             onPress={async () => {
                 setSaving(true);
                 setMessage('');
@@ -117,7 +118,7 @@ function ServerAddressForm({ server, wide, c }: { server: ServerConfig; wide: nu
                     setSaving(false);
                 }
             }}
-            ><Text style={styles.saveText}>{saving ? '저장 중...' : '서버 연결 정보 저장'}</Text></Pressable>
+            ><Text style={styles.saveText}>{saving ? '저장 중...' : '서버 연결 정보 저장'}</Text></AnimatedPressable>
             {!!message && <Text style={{ color: c.subText, fontFamily: 'Pretendard-Regular', fontSize: wide * 2.7, marginTop: wide * 2 }}>{message}</Text>}
         </View>
     );
@@ -158,9 +159,9 @@ export default function ServerSetting() {
                 <Text style={[styles.guide, { color: c.subText }]}>3. 최근 센서 상태는 휴대폰에도 저장되어, 연결이 끊겨도 마지막 동기화 값을 확인할 수 있습니다.</Text>
                 <Text style={[styles.guide, { color: c.subText }]}>4. 제출·배포 전 실제 센서 측정, 앱 설정 변경, 서버 저장 파일을 한 번씩 확인하세요.</Text>
             </View>
-            <Pressable onPress={() => setShowDeleteModal(true)} style={[styles.deleteButton, { backgroundColor: c.red.text }]}>
+            <AnimatedPressable onPress={() => setShowDeleteModal(true)} style={[styles.deleteButton, { backgroundColor: c.red.text }]}>
                 <Text>서버 삭제</Text>
-            </Pressable>
+            </AnimatedPressable>
             <ConfirmModal visible={showDeleteModal} title="서버 삭제" message={`${server.name} 서버를 삭제하시겠습니까? 저장된 연결 정보도 이 기기에서 삭제됩니다.`} confirmLabel="삭제" destructive onCancel={() => setShowDeleteModal(false)} onConfirm={deleteServer} c={c} />
         </ScrollView>
     );

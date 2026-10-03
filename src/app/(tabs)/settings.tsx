@@ -1,8 +1,9 @@
 import { Colors } from '@/constants/Colors';
+import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { useTheme } from '@/hooks/useTheme';
 import { AntDesign } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Linking, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Linking, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 async function openURL(url: string) {
     const supported = await Linking.canOpenURL(url)
@@ -40,12 +41,12 @@ export default function Settings() {
             <Text style={{ fontFamily: 'Pretendard-Medium', fontSize: 13, color: c.main.text }}>Smart Farm · ITEC tech</Text>
         </View>
         <View style={{marginTop: 5, flexDirection: 'row'}}>
-            <Pressable onPress={() => openURL('https://itec.dorrl.com/')} style={[styles.redirectButton, {backgroundColor: c.main.cover, borderColor: c.main.outline}]}>
+            <AnimatedPressable onPress={() => openURL('https://itec.dorrl.com/')} style={[styles.redirectButton, {backgroundColor: c.main.cover, borderColor: c.main.outline}]}>
                 <AntDesign name="link" size={30} color={c.main.text} />
-            </Pressable>
-            <Pressable onPress={() => openURL('https://github.com/dorrl/farmApp')} style={[styles.redirectButton, {backgroundColor: c.main.cover, borderColor: c.main.outline}]}>
+            </AnimatedPressable>
+            <AnimatedPressable onPress={() => openURL('https://github.com/dorrl/farmApp')} style={[styles.redirectButton, {backgroundColor: c.main.cover, borderColor: c.main.outline}]}>
                 <AntDesign name="github" size={30} color={c.main.text} />
-            </Pressable>
+            </AnimatedPressable>
 
         </View>
     </ScrollView>;

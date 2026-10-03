@@ -1,11 +1,12 @@
 import { Colors } from '@/constants/Colors';
+import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { BackButton } from '@/components/BackButton';
 import { FormField } from '@/components/FormField';
 import { useServerAddress } from '@/hooks/useServerAddress';
 import { useTheme } from '@/hooks/useTheme';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 export default function CreateServer() {
     const router = useRouter();
@@ -51,9 +52,9 @@ export default function CreateServer() {
                 <Text style={[styles.guide, { color: c.subText }]}>3. 최근 센서 상태는 휴대폰에도 저장되어, 연결이 끊겨도 마지막 동기화 값을 확인할 수 있습니다.</Text>
                 <Text style={[styles.guide, { color: c.subText }]}>4. 제출·배포 전 실제 센서 측정, 앱 설정 변경, 서버 저장 파일을 한 번씩 확인하세요.</Text>
             </View>
-            <Pressable onPress={create} disabled={disabled} style={[styles.saveButton, disabled ? styles.disabled : {}, { backgroundColor: c.accent }]}>
+            <AnimatedPressable onPress={create} disabled={disabled} style={[styles.saveButton, disabled ? styles.disabled : {}, { backgroundColor: c.accent }]}>
                 <Text style={styles.saveText}>{saving ? '저장 중...' : '서버 생성하기'}</Text>
-            </Pressable>
+            </AnimatedPressable>
             {!!message && <Text style={[styles.guide, { color: c.red.text }]}>{message}</Text>}
         </ScrollView>
     );

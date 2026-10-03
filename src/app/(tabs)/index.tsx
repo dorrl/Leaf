@@ -1,4 +1,5 @@
 import { Colors } from '@/constants/Colors';
+import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { useServerAddress } from '@/hooks/useServerAddress';
 import { useTheme } from '@/hooks/useTheme';
 import type { PicoStatus } from '@/types/pico';
@@ -8,7 +9,7 @@ import { getPicoStatus } from '@/utils/pico';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Modal, RefreshControl, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -159,7 +160,7 @@ function ServerCard({ server, wide, isDarkTheme, onConfigure, columns }: {
     );
 
     return (
-        <Pressable onPress={pressHandler} style={{ width: cardWidth, maxWidth: 560 }}>
+        <AnimatedPressable onPress={pressHandler} style={{ width: cardWidth, maxWidth: 560 }}>
             <Animated.View style={[
                 animStyle,
                 styles.serverCard,
@@ -212,7 +213,7 @@ function ServerCard({ server, wide, isDarkTheme, onConfigure, columns }: {
                             )}
                         </View>
 
-                        <Pressable
+                        <AnimatedPressable
                             onPress={(e) => {
                                 e.stopPropagation();
                                 onConfigure();
@@ -227,7 +228,7 @@ function ServerCard({ server, wide, isDarkTheme, onConfigure, columns }: {
                             ]}
                         >
                             <Ionicons name="settings-sharp" size={wide * 5.2} color={isDark ? '#94A3B8' : '#64748B'} />
-                        </Pressable>
+                        </AnimatedPressable>
                     </View>
                 </View>
 
@@ -238,7 +239,7 @@ function ServerCard({ server, wide, isDarkTheme, onConfigure, columns }: {
                     ))}
                 </View>
             </Animated.View>
-        </Pressable>
+        </AnimatedPressable>
     );
 }
 
@@ -421,12 +422,12 @@ export default function Index() {
                         <Ionicons name="leaf" size={wide * 5} color={c.accent} />
                     </View>
                     <View style={{ flex: 1 }} />
-                    <Pressable
+                    <AnimatedPressable
                         onPress={() => router.push('/settings')}
                         style={[styles.headerIconContainer, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : '#FFFFFF' }]}
                     >
                         <Ionicons name="settings-sharp" size={wide * 5} color={c.main.text} />
-                    </Pressable>
+                    </AnimatedPressable>
                 </View>
 
                 {/* Dashboard greeting title */}
@@ -484,7 +485,7 @@ export default function Index() {
                         ))}
 
                         {/* Add new server card at bottom */}
-                        <Pressable
+                        <AnimatedPressable
                             onPress={() => {router.push('/server/create')}}
                             style={[
                                 styles.addServerCard,
@@ -503,7 +504,7 @@ export default function Index() {
                             <Text style={{ fontFamily: 'Pretendard-Medium', fontSize: wide >= 3.0 ? 14 : 13, color: c.subText }}>
                                 새 온실 서버 추가
                             </Text>
-                        </Pressable>
+                        </AnimatedPressable>
                     </View>
                 )}
             </ScrollView>
@@ -549,12 +550,12 @@ export default function Index() {
                         </View>
 
                         <View style={styles.modalActions}>
-                            <Pressable onPress={() => setAddModalOpen(false)} style={[styles.modalBtn, styles.cancelBtn, { borderColor: c.main.outline }]}>
+                            <AnimatedPressable onPress={() => setAddModalOpen(false)} style={[styles.modalBtn, styles.cancelBtn, { borderColor: c.main.outline }]}>
                                 <Text style={{ color: c.subText, fontFamily: 'Pretendard-SemiBold' }}>취소</Text>
-                            </Pressable>
-                            <Pressable onPress={handleAddServer} style={[styles.modalBtn, { backgroundColor: c.accent }]}>
+                            </AnimatedPressable>
+                            <AnimatedPressable onPress={handleAddServer} style={[styles.modalBtn, { backgroundColor: c.accent }]}>
                                 <Text style={{ color: '#FFFFFF', fontFamily: 'Pretendard-SemiBold' }}>추가</Text>
-                            </Pressable>
+                            </AnimatedPressable>
                         </View>
                     </View>
                 </View>

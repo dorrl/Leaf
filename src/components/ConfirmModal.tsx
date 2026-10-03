@@ -1,4 +1,5 @@
 import { Colors } from '@/constants/Colors';
+import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { Modal, Pressable, Text, View } from 'react-native';
 
 export function ConfirmModal({ visible, title, message, confirmLabel = '확인', onCancel, onConfirm, c, destructive = false }: {
@@ -24,18 +25,18 @@ export function ConfirmModal({ visible, title, message, confirmLabel = '확인',
                     <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 18, marginBottom: 10, color: c.main.text }}>{title}</Text>
                     <Text style={{ fontFamily: 'Pretendard-Regular', fontSize: 14, lineHeight: 21, color: c.subText }}>{message}</Text>
                     <View style={{ flexDirection: 'row', gap: 10, marginTop: 20 }}>
-                        <Pressable
+                        <AnimatedPressable
                             onPress={onCancel}
                             style={{ flex: 1, alignItems: 'center', borderWidth: 1, borderColor: c.main.outline, borderRadius: 7, paddingVertical: 11 }}
                         >
                             <Text style={{ fontFamily: 'Pretendard-SemiBold', color: c.main.text }}>취소</Text>
-                        </Pressable>
-                        <Pressable
+                        </AnimatedPressable>
+                        <AnimatedPressable
                             onPress={onConfirm}
                             style={{ flex: 1, alignItems: 'center', borderRadius: 7, paddingVertical: 11, backgroundColor: destructive ? c.red.text : c.accent }}
                         >
                             <Text style={{ color: '#FFFFFF', fontFamily: 'Pretendard-Bold' }}>{confirmLabel}</Text>
-                        </Pressable>
+                        </AnimatedPressable>
                     </View>
                 </Pressable>
             </Pressable>

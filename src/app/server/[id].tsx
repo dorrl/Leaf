@@ -1,4 +1,5 @@
 import { Colors } from '@/constants/Colors';
+import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { useServerAddress } from '@/hooks/useServerAddress';
 import { useTheme } from '@/hooks/useTheme';
 import type { PicoReading, PicoReadingsResponse, PicoStatus } from '@/types/pico';
@@ -8,7 +9,7 @@ import { getPicoStatus } from '@/utils/pico';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -101,7 +102,7 @@ function LargePicoCard({ pico, serverId, wide, isDark, cardWidth }: { pico: Pico
     const lightVal = pico.light ?? 0;
 
     return (
-        <Pressable
+        <AnimatedPressable
             accessibilityRole="button"
             accessibilityLabel={`${pico.name} 상세 보기`}
             onPress={() => router.push({ pathname: '/server/[id]/[pico]', params: { id: serverId, pico: pico.id ?? pico.name } })}
@@ -140,7 +141,7 @@ function LargePicoCard({ pico, serverId, wide, isDark, cardWidth }: { pico: Pico
                     </View>
                 </>}
             </View>
-        </Pressable>
+        </AnimatedPressable>
     );
 }
 
@@ -231,15 +232,15 @@ export default function ServerDetail() {
         <View style={[styles.container, { backgroundColor: c.background }]}>
             {/* Header */}
             <View style={[styles.header, { width: '100%', maxWidth: 1160, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 20, paddingTop: width >= 700 ? 30 : 26, marginBottom: 8 }]}>
-                <Pressable onPress={() => router.back()}
+                <AnimatedPressable onPress={() => router.back()}
                     style={[styles.headerIcon, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
                     <Ionicons name="chevron-back" size={20} color={c.main.text} />
-                </Pressable>
+                </AnimatedPressable>
                 <View style={{ flex: 1 }} />
-                <Pressable onPress={() => router.push({ pathname: '/server/[id]/setting', params: { id: id }})}
+                <AnimatedPressable onPress={() => router.push({ pathname: '/server/[id]/setting', params: { id: id }})}
                     style={[styles.headerIcon, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
                     <Ionicons name="settings-outline" size={18} color={c.main.text} />
-                </Pressable>
+                </AnimatedPressable>
             </View>
 
             <ScrollView
@@ -300,7 +301,7 @@ export default function ServerDetail() {
                                     : type === 'all' ? (isDark ? '#E2E8F0' : '#1E293B')
                                         : (isDark ? '#4ADE80' : '#15803D');
                                 return (
-                                    <Pressable key={type} onPress={() => setFilter(type)} style={[
+                                    <AnimatedPressable key={type} onPress={() => setFilter(type)} style={[
                                         styles.segmentButton,
                                         isActive && { backgroundColor: activeBg, borderRadius: 10, elevation: 1, shadowColor: '#10231E', shadowOpacity: 0.05, shadowRadius: 4 }
                                     ]}>
@@ -309,7 +310,7 @@ export default function ServerDetail() {
                                             fontSize: wide * 3.2,
                                             fontFamily: isActive ? 'Pretendard-Bold' : 'Pretendard-Medium',
                                         }}>{label}</Text>
-                                    </Pressable>
+                                    </AnimatedPressable>
                                 );
                             })}
                         </View>

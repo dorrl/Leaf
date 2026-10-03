@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { Pressable } from 'react-native';
 
 export function BackButton({ onPress, color, backgroundColor }: {
@@ -7,7 +8,7 @@ export function BackButton({ onPress, color, backgroundColor }: {
     backgroundColor: string;
 }) {
     return (
-        <Pressable
+        <AnimatedPressable
             accessibilityRole="button"
             accessibilityLabel="뒤로가기"
             onPress={onPress}
@@ -23,6 +24,6 @@ export function BackButton({ onPress, color, backgroundColor }: {
             }}
         >
             <Ionicons name="chevron-back" size={22} color={color} />
-        </Pressable>
+        </AnimatedPressable>
     );
 }
