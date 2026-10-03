@@ -120,13 +120,14 @@ function ServerCard({ server, wide, isDarkTheme, onConfigure }: {
     wide: number;
     isDarkTheme: boolean;
     onConfigure: () => void;
+    columns?: 1 | 2;
 }) {
     const router = useRouter();
     const scale = useSharedValue(1);
 
     const isDark = isDarkTheme;
     const c = isDark ? Colors.dark : Colors.light;
-    const cardWidth = wide >= 3.9 ? '48%' : (wide >= 3.0 ? '82%' : '100%');
+    const cardWidth = columns === 2 ? '48%' : '100%';
 
     const cardBg = c.main.cover;
     const cardBorder = server.error
@@ -399,7 +400,10 @@ export default function Index() {
     const totalPicos = fetchedServers.reduce((acc, s) => acc + s.picos.length, 0);
     const wrongPicos = fetchedServers.reduce((acc, s) => acc + s.picos.filter(p => p.status === 'wrong').length, 0);
     const offlineServers = fetchedServers.filter(s => s.error).length;
-    const dashboardCardWidth = wide >= 3.9 ? '52%' : (wide >= 3.0 ? '88%' : '100%');
+    const horizontalPadding = wide >= 3.0 ? 28 : 20;
+    const availableServerWidth = Math.min(width, 980) - horizontalPadding * 2;
+    const serverGridColumns: 1 | 2 = availableServerWidth >= 620 ? 2 : 1;
+    const dashboardCardWidth = serverGridColumns === 2 ? '48%' : '100%';
 
     return (
         <View style={{ flex: 1, backgroundColor: c.background }}>
@@ -467,7 +471,7 @@ export default function Index() {
                         <ActivityIndicator size="large" color={c.accent} />
                     </View>
                 ) : (
-                    <View style={{ width: '100%', maxWidth: 980, paddingHorizontal: wide >= 3.0 ? 28 : 20, gap: wide >= 3.9 ? 18 : 20, alignItems: 'flex-start' }}>
+                    <View style={{ width: '100%', maxWidth: 980, paddingHorizontal: horizontalPadding, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', columnGap: 18, rowGap: 20 }}>
                         {fetchedServers.map((server) => (
                             <ServerCard
                                 key={server.id}
@@ -475,6 +479,7 @@ export default function Index() {
                                 wide={wide}
                                 isDarkTheme={isDark}
                                 onConfigure={() => router.push({ pathname: '/server/[id]/setting', params: { id: server.id} })}
+                                columns={serverGridColumns}
                             />
                         ))}
 
