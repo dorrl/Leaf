@@ -509,7 +509,7 @@ export default function PicoStatus() {
             }>
                 { /* back & title */ }
                 <View style={[styles.header, { paddingTop: wide * 3, paddingBottom: wide * 2 }]}>
-                    <Pressable accessibilityRole="button" accessibilityLabel="뒤로가기" onPress={() => router.back()} style={[styles.headerIcon, { backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : '#FFFFFF' }]}>
+                    <Pressable accessibilityRole="button" accessibilityLabel="뒤로가기" onPress={() => router.back()} style={[styles.headerIcon, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
                         <Ionicons name="chevron-back" size={wide * 5} color={c.main.text} />
                     </Pressable>
                     <View style={{ flex: 1 }} />
@@ -518,7 +518,7 @@ export default function PicoStatus() {
                 <View style={{ paddingBottom: wide * 3 }}>
                     <View style={[{ flexDirection: 'row' }]}>
                         <Text style={{ color: c.main.text, fontFamily: 'Pretendard-Bold', fontSize: wide * 7 }} numberOfLines={1}>{current?.name || picoId || 'Pico'}</Text>
-                        <Pressable accessibilityRole="button" accessibilityLabel="이름 변경" onPress={openRenameMenu} style={[styles.headerIcon, { marginLeft: wide * 5, backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : '#FFFFFF' }]}>
+                        <Pressable accessibilityRole="button" accessibilityLabel="이름 변경" onPress={openRenameMenu} style={[styles.headerIcon, { marginLeft: wide * 5, backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
                             <Entypo name="pencil" size={wide * 7} color={c.main.text} />
                         </Pressable>
                     </View>

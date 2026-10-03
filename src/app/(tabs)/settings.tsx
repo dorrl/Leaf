@@ -1,7 +1,14 @@
 import { Colors } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
+import { AntDesign } from '@expo/vector-icons';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+
+async function openURL(url: string) {
+    const supported = await Linking.canOpenURL(url)
+    if (supported) await Linking.openURL(url)
+    else return
+}
 
 export default function Settings() {
     const { isDark, toggleTheme } = useTheme(); const c = isDark ? Colors.dark : Colors.light;
@@ -32,6 +39,15 @@ export default function Settings() {
             <Text style={{ fontFamily: 'Pretendard-SemiBold', fontSize: 13, color: c.subText, marginBottom: 8 }}>앱 정보</Text>
             <Text style={{ fontFamily: 'Pretendard-Medium', fontSize: 13, color: c.main.text }}>Smart Farm · ITEC tech</Text>
         </View>
+        <View style={{marginTop: 5, flexDirection: 'row'}}>
+            <Pressable onPress={() => openURL('https://itec.dorrl.com/')} style={[styles.redirectButton, {backgroundColor: c.main.cover, borderColor: c.main.outline}]}>
+                <AntDesign name="link" size={30} color={c.main.text} />
+            </Pressable>
+            <Pressable onPress={() => openURL('https://github.com/dorrl/farmApp')} style={[styles.redirectButton, {backgroundColor: c.main.cover, borderColor: c.main.outline}]}>
+                <AntDesign name="github" size={30} color={c.main.text} />
+            </Pressable>
+
+        </View>
     </ScrollView>;
 }
 
@@ -41,4 +57,5 @@ const styles = StyleSheet.create({
     settingTitle: { fontFamily: 'Pretendard-SemiBold', fontSize: 14 },
     settingDescription: { fontFamily: 'Pretendard-Regular', fontSize: 12, marginTop: 3 },
     divider: { height: 1 },
+    redirectButton: {width: 40, height: 40, borderRadius: 8, marginRight: 10,justifyContent: 'center', alignItems: 'center', borderWidth: 1}
 });
