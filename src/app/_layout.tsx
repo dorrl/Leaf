@@ -4,6 +4,8 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { Platform } from 'react-native';
+import * as NavigationBar from 'expo-navigation-bar';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -21,6 +23,12 @@ export default function RootLayout() {
     });
 
     useEffect(() => {
+        if (Platform.OS === 'android') {
+            NavigationBar.setHidden(true);
+        }
+    }, []);
+
+    useEffect(() => {
         if (loaded || error) {
             SplashScreen.hideAsync();
         }
@@ -33,7 +41,7 @@ export default function RootLayout() {
     return (
         <ThemeProvider>
             <ServerAddressProvider>
-                <Stack screenOptions={{ headerShown: false }}>
+                <Stack screenOptions={{ headerShown: false, navigationBarHidden: true }}>
                     <Stack.Screen name="(tabs)" />
                     <Stack.Screen name='server' />
                 </Stack>
