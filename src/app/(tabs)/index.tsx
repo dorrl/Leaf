@@ -115,7 +115,7 @@ function MiniPicoCard({ pico, isServerDark, wide }: { pico: Pico; isServerDark: 
     );
 }
 
-function ServerCard({ server, wide, isDarkTheme, onConfigure }: {
+function ServerCard({ server, wide, isDarkTheme, onConfigure, columns }: {
     server: Server;
     wide: number;
     isDarkTheme: boolean;
