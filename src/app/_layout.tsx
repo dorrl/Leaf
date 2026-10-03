@@ -24,7 +24,7 @@ export default function RootLayout() {
 
     useEffect(() => {
         if (Platform.OS === 'android') {
-            NavigationBar.setHidden(true);
+            NavigationBar.setVisibilityAsync('hidden');
         }
     }, []);
 

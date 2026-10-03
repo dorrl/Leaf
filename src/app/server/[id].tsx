@@ -70,7 +70,7 @@ function GaugeBar({ label, value, max, color, wide, isDark, unit }: {
     );
 }
 
-function LargePicoCard({ pico, serverId, wide, isDark, cardWidth }: { pico: Pico; serverId: string; wide: number; isDark: boolean; cardWidth: '32%' | '48%' | '100%' }) {
+function LargePicoCard({ pico, serverId, wide, isDark, cardWidth }: { pico: Pico; serverId: string; wide: number; isDark: boolean; cardWidth: '32%' | '48%' }) {
     const c = isDark ? Colors.dark : Colors.light;
     const router = useRouter();
 
@@ -153,8 +153,8 @@ export default function ServerDetail() {
     const c = isDark ? Colors.dark : Colors.light;
     const { width, height } = useWindowDimensions();
     const wide = Math.min(Math.min(width, height) * 0.01, 4);
-    const gridColumns = width >= 1180 ? 3 : width >= 700 ? 2 : 1;
-    const cardWidth: '32%' | '48%' | '100%' = gridColumns === 3 ? '32%' : gridColumns === 2 ? '48%' : '100%';
+    const gridColumns = width >= 900 ? 3 : 2;
+    const cardWidth: '32%' | '48%' = gridColumns === 3 ? '32%' : '48%';
 
     const { servers, loaded } = useServerAddress();
     const serverConfig = servers.find(s => s.id === id);
@@ -315,7 +315,7 @@ export default function ServerDetail() {
                         </View>
 
                         {/* Pico Cards Grid */}
-                        <View style={styles.gridContainer}>
+                        <View style={[styles.gridContainer, { maxWidth: 640, alignSelf: 'center', width: '100%' }]}>
                             {filteredPicos.map((pico, idx) => (
                                 <LargePicoCard key={pico.id ?? (pico.name + '-' + idx)} pico={pico} serverId={serverConfig.id} wide={wide} isDark={isDark} cardWidth={cardWidth} />
                             ))}
