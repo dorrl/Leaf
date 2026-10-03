@@ -49,7 +49,9 @@
         {
           "hidden": true
         }
-      ]
+      ],
+      "expo-notifications",
+      "expo-background-task"
     ],
     "experiments": {
       "typedRoutes": true,

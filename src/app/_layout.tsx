@@ -1,3 +1,4 @@
+import { initializeNotificationBackground } from '@/services/notificationBackground';
 import { ServerAddressProvider } from '@/hooks/useServerAddress';
 import { ThemeProvider } from '@/hooks/useTheme';
 import { useFonts } from 'expo-font';
@@ -27,6 +28,14 @@ export default function RootLayout() {
             NavigationBar.setVisibilityAsync('hidden');
         }
     }, []);
+
+    useEffect(() => {
+        if (!loaded && !error) return;
+
+        void initializeNotificationBackground().catch(() => {
+            // Notification permission/background scheduling should not block app startup.
+        });
+    }, [loaded, error]);
 
     useEffect(() => {
         if (loaded || error) {
