@@ -608,7 +608,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'flex-start',
-        rowGap: 8,
+        gap: 8,
     },
     miniPico: {
         justifyContent: 'center',
