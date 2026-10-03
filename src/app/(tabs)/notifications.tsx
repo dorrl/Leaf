@@ -189,10 +189,10 @@ export default function Notifications() {
             <View style={{ height: 1, backgroundColor: c.main.outline, marginVertical: 10 }} />
             {servers.map(server => renderServerFilter(server.id, server.name, serverCounts[server.id] ?? 0))}
         </View>}
-        <View style={{ flex: 1, minWidth: 0 }}>
+        <View style={{ flex: 1, minWidth: 0, paddingHorizontal: 3, paddingTop: 10 }}>
             <View style={{ width: '100%', maxWidth: 1080, alignSelf: 'center', paddingHorizontal: isWideLayout ? 28 : 16, paddingTop: isWideLayout ? 16 : 10, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
                 <View style={{ flex: 1 }}>
-                    <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 23, color: c.main.text }}>알림</Text>
+                    <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 25, color: c.main.text }}>알림</Text>
                     <Text style={{ fontFamily: 'Pretendard-Regular', fontSize: 12, color: c.subText, marginTop: 3 }}>
                         {selectedServer?.name ?? '모든 서버'} · {visibleItems.length}개
                     </Text>

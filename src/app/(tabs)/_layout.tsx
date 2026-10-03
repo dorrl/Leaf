@@ -2,7 +2,6 @@ import { Colors } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import React from 'react';
 import { Platform, View } from 'react-native';
 
 export default function TabsLayout() {
@@ -24,7 +23,7 @@ export default function TabsLayout() {
                     borderTopColor: isDark ? '#3F4147' : '#DCDDDF',
                     borderTopWidth: 1,
                     elevation: 0,
-                    paddingBottom: Platform.OS === 'ios' ? 22 : 4,
+                    paddingBottom: Platform.OS === 'ios' ? 22 : 0,
                     paddingTop: 4,
                 },
                 tabBarActiveTintColor: c.tab.active,
@@ -52,6 +51,7 @@ export default function TabsLayout() {
                             justifyContent: 'center',
                             width: 32,
                             height: 28,
+
                             borderRadius: 7,
                             backgroundColor: focused
                                 ? (isDark ? 'rgba(135,146,247,0.18)' : 'rgba(88,101,242,0.1)')
