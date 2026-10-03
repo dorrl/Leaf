@@ -3,8 +3,8 @@ import { useTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { useEffect } from 'react';
+import { Platform } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { Platform, View } from 'react-native';
 
 function TabIcon({ focused, color, iconName, isDark }: { focused: boolean; color: string; iconName: keyof typeof Ionicons.glyphMap; isDark: boolean }) {
     const scale = useSharedValue(focused ? 1.04 : 0.94);
@@ -85,7 +85,7 @@ export default function TabsLayout() {
                     } else if (route.name === 'settings') {
                         iconName = focused ? 'settings' : 'settings-outline';
                     }
-                    return <TabIcon focused={focused} color={color} iconName={iconName} isDark={isDark} />;
+                    return <TabIcon focused={focused} color={color.toString()} iconName={iconName} isDark={isDark} />;
                 },
             })}
         >

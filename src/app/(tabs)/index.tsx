@@ -1,5 +1,5 @@
-import { Colors } from '@/constants/Colors';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
+import { Colors } from '@/constants/Colors';
 import { useServerAddress } from '@/hooks/useServerAddress';
 import { useTheme } from '@/hooks/useTheme';
 import type { PicoStatus } from '@/types/pico';
@@ -500,10 +500,12 @@ export default function Index() {
                                 }
                             ]}
                         >
-                            <Ionicons name="add-circle" size={wide >= 3.0 ? 32 : 28} color={c.subText} style={{ marginBottom: wide * 1 }} />
-                            <Text style={{ fontFamily: 'Pretendard-Medium', fontSize: wide >= 3.0 ? 14 : 13, color: c.subText }}>
-                                새 온실 서버 추가
-                            </Text>
+                            <View style={{alignItems: 'center'}}>
+                                <Ionicons name="add-circle" size={wide >= 3.0 ? 32 : 28} color={c.subText} style={{ marginBottom: wide * 1 }} />
+                                <Text style={{ fontFamily: 'Pretendard-Medium', fontSize: wide >= 3.0 ? 14 : 13, color: c.subText }}>
+                                    새 온실 서버 추가
+                                </Text>
+                            </View>
                         </AnimatedPressable>
                     </View>
                 )}
