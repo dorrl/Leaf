@@ -424,7 +424,8 @@ export default function PicoStatus() {
     const statusLabel = status === 'normal' ? '정상' : status === 'wrong' ? '주의 필요' : status === 'disconnected' ? '연결 끊김' : '상태 정보 없음';
     const updatedAt = current?.at ? new Date(current.at).toLocaleString('ko-KR') : '업데이트 시간 정보 없음';
     const contentHorizontalPadding = width >= 700 ? 56 : 24;
-    const chartWidth = Math.max(Math.min(width - contentHorizontalPadding, 1040), 180);
+    const chartSectionPadding = wide * 4;
+    const chartWidth = Math.max(Math.min(width - contentHorizontalPadding - chartSectionPadding * 2, 1040), 180);
 
     const refresh = () => { setRefreshing(true); void loadReadings(); };
 
@@ -541,7 +542,7 @@ export default function PicoStatus() {
                             </View>}
                         </View>
 
-                        <View style={[styles.section, { backgroundColor: c.main.cover, borderColor: c.main.outline, padding: wide * 4 }]}>
+                        <View style={[styles.section, { backgroundColor: c.main.cover, borderColor: c.main.outline, padding: wide * 4, overflow: 'hidden' }]}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: wide * 2 }}>
                                 <Text style={{ color: c.main.text, fontFamily: 'Pretendard-SemiBold', fontSize: wide * 4 }}>센서 기록</Text>
                                 <Pressable accessibilityRole="button" accessibilityLabel="그래프 기간 선택" onPress={() => setPeriodMenuOpen(true)} style={[styles.periodButton, { borderColor: c.main.outline, backgroundColor: c.sub.cover }]}><Text style={{ color: c.main.text, fontFamily: 'Pretendard-Medium', fontSize: wide * 2.8 }}>{selectedPeriod.label}</Text><Ionicons name="chevron-down" size={wide * 3.2} color={c.subText} /></Pressable>
