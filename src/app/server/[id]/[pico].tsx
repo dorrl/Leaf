@@ -500,7 +500,7 @@ export default function PicoStatus() {
 
     return (
         <View style={[styles.container, { backgroundColor: c.background }]}>
-            <ScrollView style={styles.scroll} scrollEnabled={!chartTouchActive} contentContainerStyle={{ width: '100%', maxWidth: 1120, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 12, paddingTop: width >= 700 ? 10 : 6, paddingBottom: 40 }} refreshControl={
+            <ScrollView style={styles.scroll} scrollEnabled={!chartTouchActive} contentContainerStyle={{ width: '100%', maxWidth: 1120, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 16, paddingTop: width >= 700 ? 10 : 6, paddingBottom: 40 }} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={c.accent} colors={[c.accent]} />
             }>
                 { /* back & title */ }

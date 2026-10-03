@@ -399,13 +399,13 @@ export default function Index() {
     const totalPicos = fetchedServers.reduce((acc, s) => acc + s.picos.length, 0);
     const wrongPicos = fetchedServers.reduce((acc, s) => acc + s.picos.filter(p => p.status === 'wrong').length, 0);
     const offlineServers = fetchedServers.filter(s => s.error).length;
-    const dashboardCardWidth = wide >= 3.9 ? '48%' : (wide >= 3.0 ? '82%' : '100%');
+    const dashboardCardWidth = wide >= 3.9 ? '52%' : (wide >= 3.0 ? '88%' : '100%');
 
     return (
         <View style={{ flex: 1, backgroundColor: c.background }}>
             <ScrollView
                 style={[styles.scroll, { backgroundColor: c.background }]}
-                contentContainerStyle={{ paddingBottom: 96, paddingTop: wide >= 3.0 ? 24 : 16, alignItems: 'center' }}
+                contentContainerStyle={{ paddingBottom: 64, paddingTop: wide >= 3.0 ? 24 : 16, alignItems: 'center' }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={c.accent} colors={[c.accent]} />

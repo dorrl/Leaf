@@ -142,7 +142,7 @@ export default function ServerSetting() {
     if (server === undefined) return
 
     return (
-        <ScrollView style={{ flex: 1, backgroundColor: c.background }} contentContainerStyle={{ width: '100%', maxWidth: 760, alignSelf: 'center', paddingHorizontal: 16, paddingTop: 32, paddingBottom: 40 }}>
+        <ScrollView style={{ flex: 1, backgroundColor: c.background }} contentContainerStyle={{ width: '100%', maxWidth: 760, alignSelf: 'center', paddingHorizontal: 16, paddingTop: 44, paddingBottom: 40 }}>
             <View style={{ paddingTop: 2 }}>
                 <BackButton onPress={() => router.back()} color={c.main.text} backgroundColor={isDark ? 'rgba(255,255,255,0.04)' : '#FFFFFF'} />
             </View>
