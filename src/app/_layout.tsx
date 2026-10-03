@@ -4,6 +4,8 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { Platform } from 'react-native';
+import * as NavigationBar from 'expo-navigation-bar';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -14,11 +16,17 @@ export default function RootLayout() {
         'Pretendard-Light': require('../../assets/fonts/Pretendard/Light.otf'),
         'Pretendard-Regular': require('../../assets/fonts/Pretendard/Regular.otf'),
         'Pretendard-Medium': require('../../assets/fonts/Pretendard/Medium.otf'),
-        'Pretendard-SemiBold': require('../../assets/fonts/Pretendard/SemiBold.otf'),
+        'Pretendard-SemiBold': require('../../assets/fonts/Pretendard/Semibold.otf'),
         'Pretendard-Bold': require('../../assets/fonts/Pretendard/Bold.otf'),
         'Pretendard-ExtraBold': require('../../assets/fonts/Pretendard/ExtraBold.otf'),
         'Pretendard-Black': require('../../assets/fonts/Pretendard/Black.otf'),
     });
+
+    useEffect(() => {
+        if (Platform.OS === 'android') {
+            NavigationBar.setVisibilityAsync('hidden');
+        }
+    }, []);
 
     useEffect(() => {
         if (loaded || error) {
@@ -33,7 +41,7 @@ export default function RootLayout() {
     return (
         <ThemeProvider>
             <ServerAddressProvider>
-                <Stack screenOptions={{ headerShown: false }}>
+                <Stack screenOptions={{ headerShown: false, navigationBarHidden: true }}>
                     <Stack.Screen name="(tabs)" />
                     <Stack.Screen name='server' />
                 </Stack>

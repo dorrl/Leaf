@@ -1,3 +1,4 @@
+import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { Colors } from '@/constants/Colors';
 import { useServerAddress } from '@/hooks/useServerAddress';
 import { useTheme } from '@/hooks/useTheme';
@@ -8,7 +9,7 @@ import { getPicoStatus } from '@/utils/pico';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Modal, RefreshControl, ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -65,10 +66,9 @@ function MiniPicoCard({ pico, isServerDark, wide }: { pico: Pico; isServerDark: 
             styles.miniPico,
             {
                 backgroundColor: bgColor,
-                width: '23.5%',
-                height: wide * 22,
+                width: '24%',
+                aspectRatio: 1,
                 padding: wide * 1.5,
-                marginRight: wide * 3,
                 borderRadius: wide * 2.5,
                 borderColor: isServerDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
                 borderWidth: 1,
@@ -116,26 +116,27 @@ function MiniPicoCard({ pico, isServerDark, wide }: { pico: Pico; isServerDark: 
     );
 }
 
-function ServerCard({ server, wide, isDarkTheme, onConfigure }: {
+function ServerCard({ server, wide, isDarkTheme, onConfigure, columns }: {
     server: Server;
     wide: number;
     isDarkTheme: boolean;
     onConfigure: () => void;
+    columns?: 1 | 2;
 }) {
     const router = useRouter();
     const scale = useSharedValue(1);
 
     const isDark = isDarkTheme;
+    const c = isDark ? Colors.dark : Colors.light;
+    const cardWidth = columns === 2 ? '48%' : '100%';
 
-    const cardBg = isDark ? '#111827' : '#FFFFFF';
+    const cardBg = c.main.cover;
     const cardBorder = server.error
-        ? (isDark ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.15)')
-        : (isDark ? 'rgba(74, 222, 128, 0.12)' : 'rgba(0, 0, 0, 0.05)');
+        ? c.red.outline
+        : c.main.outline;
 
-    const titleColor = isDark ? '#FFFFFF' : '#1E293B';
-    const locationColor = isDark ? 'rgba(255, 255, 255, 0.6)' : '#64748B';
-    const plusBg = isDark ? 'rgba(255, 255, 255, 0.04)' : '#F8FAFC';
-    const plusColor = isDark ? 'rgba(74, 222, 128, 0.5)' : '#94A3B8';
+    const titleColor = c.main.text;
+    const locationColor = c.subText;
 
     const pressHandler = () => {
         scale.value = withSpring(0.98, { damping: 15 }, () => {
@@ -159,7 +160,7 @@ function ServerCard({ server, wide, isDarkTheme, onConfigure }: {
     );
 
     return (
-        <Pressable onPress={pressHandler}>
+        <AnimatedPressable onPress={pressHandler} style={{ width: cardWidth, maxWidth: 560 }}>
             <Animated.View style={[
                 animStyle,
                 styles.serverCard,
@@ -212,7 +213,7 @@ function ServerCard({ server, wide, isDarkTheme, onConfigure }: {
                             )}
                         </View>
 
-                        <Pressable
+                        <AnimatedPressable
                             onPress={(e) => {
                                 e.stopPropagation();
                                 onConfigure();
@@ -227,7 +228,7 @@ function ServerCard({ server, wide, isDarkTheme, onConfigure }: {
                             ]}
                         >
                             <Ionicons name="settings-sharp" size={wide * 5.2} color={isDark ? '#94A3B8' : '#64748B'} />
-                        </Pressable>
+                        </AnimatedPressable>
                     </View>
                 </View>
 
@@ -238,7 +239,7 @@ function ServerCard({ server, wide, isDarkTheme, onConfigure }: {
                     ))}
                 </View>
             </Animated.View>
-        </Pressable>
+        </AnimatedPressable>
     );
 }
 
@@ -246,7 +247,7 @@ function ServerCard({ server, wide, isDarkTheme, onConfigure }: {
 
 export default function Index() {
     const { width, height } = useWindowDimensions();
-    const wide = Math.min(width, height) * 0.01;
+    const wide = Math.min(Math.min(width, height) * 0.01, 4);
     const { isDark } = useTheme();
     const c = isDark ? Colors.dark : Colors.light;
     const router = useRouter();
@@ -293,7 +294,9 @@ export default function Index() {
                             connected: p.connected,
                             temperature: p.state.temperature,
                             moisture: p.state.moisture,
-                        });
+                            light: p.state.light,
+                            at: p.receivedAt ? Date.parse(p.receivedAt) : null,
+                        }, p.optimalRange);
                         return {
                             name: p.name || p.id,
                             temp: p.state.temperature,
@@ -319,7 +322,13 @@ export default function Index() {
                         temp: p.state?.temperature,
                         humidity: p.state?.moisture,
                         light: p.state?.light,
-                        status: !p.connected ? 'disconnected' : (p.state?.temperature > 30 || p.state?.temperature < 15 || p.state?.moisture < 30) ? 'wrong' : 'normal',
+                        status: getPicoStatus({
+                            connected: p.connected,
+                            temperature: p.state?.temperature,
+                            moisture: p.state?.moisture,
+                            light: p.state?.light,
+                            at: p.receivedAt ? Date.parse(p.receivedAt) : null,
+                        }, p.optimalRange),
                     }));
                     return {
                         id: srv.id,
@@ -392,34 +401,38 @@ export default function Index() {
     const totalPicos = fetchedServers.reduce((acc, s) => acc + s.picos.length, 0);
     const wrongPicos = fetchedServers.reduce((acc, s) => acc + s.picos.filter(p => p.status === 'wrong').length, 0);
     const offlineServers = fetchedServers.filter(s => s.error).length;
+    const horizontalPadding = wide >= 3.0 ? 28 : 20;
+    const availableServerWidth = Math.min(width, 980) - horizontalPadding * 2;
+    const serverGridColumns: 1 | 2 = availableServerWidth >= 620 ? 2 : 1;
+    const dashboardCardWidth = serverGridColumns === 2 ? '48%' : '100%';
 
     return (
         <View style={{ flex: 1, backgroundColor: c.background }}>
             <ScrollView
                 style={[styles.scroll, { backgroundColor: c.background }]}
-                contentContainerStyle={{ paddingBottom: wide * 26, paddingTop: wide * 6 }}
+                contentContainerStyle={{ paddingBottom: 64, paddingTop: wide >= 3.0 ? 24 : 16, alignItems: 'center' }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={c.accent} colors={[c.accent]} />
                 }
             >
                 {/* Custom Premium Header */}
-                <View style={[styles.header, { paddingHorizontal: wide * 6, marginBottom: wide * 3 }]}>
+                <View style={[styles.header, { width: '100%', maxWidth: 980, paddingHorizontal: wide >= 3.0 ? 28 : 20, marginBottom: wide * 3 }]}>
                     <View style={[styles.headerIconContainer, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : '#FFFFFF' }]}>
                         <Ionicons name="leaf" size={wide * 5} color={c.accent} />
                     </View>
                     <View style={{ flex: 1 }} />
-                    <Pressable
+                    <AnimatedPressable
                         onPress={() => router.push('/settings')}
                         style={[styles.headerIconContainer, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : '#FFFFFF' }]}
                     >
                         <Ionicons name="settings-sharp" size={wide * 5} color={c.main.text} />
-                    </Pressable>
+                    </AnimatedPressable>
                 </View>
 
                 {/* Dashboard greeting title */}
-                <View style={{ paddingHorizontal: wide * 6, marginBottom: wide * 5 }}>
-                    <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: wide * 7, color: c.main.text }}>
+                <View style={{ width: '100%', maxWidth: 980, paddingHorizontal: wide >= 3.0 ? 28 : 20, marginBottom: wide * 5, alignItems: 'flex-start' }}>
+                    <Text style={{ width: '100%', fontFamily: 'Pretendard-Bold', fontSize: wide * 7, color: c.main.text }}>
                         스마트팜 허브
                     </Text>
 
@@ -430,6 +443,9 @@ export default function Index() {
                             backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : '#FFFFFF',
                             borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
                             padding: wide * 3.5,
+                            width: dashboardCardWidth,
+                            maxWidth: 560,
+                            alignSelf: 'center',
                             borderRadius: wide * 4,
                             marginTop: wide * 3,
                         }
@@ -456,7 +472,7 @@ export default function Index() {
                         <ActivityIndicator size="large" color={c.accent} />
                     </View>
                 ) : (
-                    <View style={{ paddingHorizontal: wide * 6, gap: wide * 5.5 }}>
+                    <View style={{ width: '100%', maxWidth: 980, paddingHorizontal: horizontalPadding, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', columnGap: 18, rowGap: 20 }}>
                         {fetchedServers.map((server) => (
                             <ServerCard
                                 key={server.id}
@@ -464,27 +480,33 @@ export default function Index() {
                                 wide={wide}
                                 isDarkTheme={isDark}
                                 onConfigure={() => router.push({ pathname: '/server/[id]/setting', params: { id: server.id} })}
+                                columns={serverGridColumns}
                             />
                         ))}
 
                         {/* Add new server card at bottom */}
-                        <Pressable
+                        <AnimatedPressable
                             onPress={() => {router.push('/server/create')}}
                             style={[
                                 styles.addServerCard,
                                 {
-                                    borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)',
-                                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.01)' : 'rgba(0, 0, 0, 0.005)',
-                                    height: wide * 28,
+                                    borderColor: c.main.outline,
+                                    backgroundColor: 'transparent',
+                                    width: dashboardCardWidth,
+                                    maxWidth: 560,
+                                    minHeight: 120,
+                                    height: wide >= 3.0 ? 180 : 150,
                                     borderRadius: wide * 5,
                                 }
                             ]}
                         >
-                            <Ionicons name="add-circle" size={wide * 8} color={isDark ? 'rgba(255,255,255,0.15)' : '#94A3B8'} style={{ marginBottom: wide * 1 }} />
-                            <Text style={{ fontFamily: 'Pretendard-Medium', fontSize: wide * 3, color: isDark ? '#475569' : '#94A3B8' }}>
-                                새 온실 서버 추가
-                            </Text>
-                        </Pressable>
+                            <View style={{alignItems: 'center'}}>
+                                <Ionicons name="add-circle" size={wide >= 3.0 ? 32 : 28} color={c.subText} style={{ marginBottom: wide * 1 }} />
+                                <Text style={{ fontFamily: 'Pretendard-Medium', fontSize: wide >= 3.0 ? 14 : 13, color: c.subText }}>
+                                    새 온실 서버 추가
+                                </Text>
+                            </View>
+                        </AnimatedPressable>
                     </View>
                 )}
             </ScrollView>
@@ -530,12 +552,12 @@ export default function Index() {
                         </View>
 
                         <View style={styles.modalActions}>
-                            <Pressable onPress={() => setAddModalOpen(false)} style={[styles.modalBtn, styles.cancelBtn, { borderColor: c.main.outline }]}>
+                            <AnimatedPressable onPress={() => setAddModalOpen(false)} style={[styles.modalBtn, styles.cancelBtn, { borderColor: c.main.outline }]}>
                                 <Text style={{ color: c.subText, fontFamily: 'Pretendard-SemiBold' }}>취소</Text>
-                            </Pressable>
-                            <Pressable onPress={() => {}} style={[styles.modalBtn, { backgroundColor: c.accent }]}>
+                            </AnimatedPressable>
+                            <AnimatedPressable onPress={handleAddServer} style={[styles.modalBtn, { backgroundColor: c.accent }]}>
                                 <Text style={{ color: '#FFFFFF', fontFamily: 'Pretendard-SemiBold' }}>추가</Text>
-                            </Pressable>
+                            </AnimatedPressable>
                         </View>
                     </View>
                 </View>
@@ -589,7 +611,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'flex-start',
-        rowGap: 8,
+        gap: 8,
     },
     miniPico: {
         justifyContent: 'center',

@@ -1,4 +1,5 @@
 import { Colors } from '@/constants/Colors';
+import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { useServerAddress } from '@/hooks/useServerAddress';
 import { useTheme } from '@/hooks/useTheme';
 import type { PicoReading, PicoReadingsResponse, PicoStatus } from '@/types/pico';
@@ -8,7 +9,7 @@ import { getPicoStatus } from '@/utils/pico';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -34,7 +35,9 @@ function normalizePico(raw: PicoReading): Pico {
         connected: raw.connected,
         temperature: raw.state.temperature,
         moisture: raw.state.moisture,
-    });
+        light: raw.state.light,
+        at: raw.receivedAt ? Date.parse(raw.receivedAt) : null,
+    }, raw.optimalRange);
 
     return {
         id: raw.id,
@@ -68,12 +71,12 @@ function GaugeBar({ label, value, max, color, wide, isDark, unit }: {
     );
 }
 
-function LargePicoCard({ pico, serverId, wide, isDark }: { pico: Pico; serverId: string; wide: number; isDark: boolean }) {
+function LargePicoCard({ pico, serverId, wide, isDark, cardWidth }: { pico: Pico; serverId: string; wide: number; isDark: boolean; cardWidth: '32%' | '48%' }) {
     const c = isDark ? Colors.dark : Colors.light;
     const router = useRouter();
 
-    let cardBg = isDark ? 'rgba(255,255,255,0.03)' : '#FFFFFF';
-    let borderColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)';
+    const cardBg = pico.status === 'normal' ? c.green.cover : pico.status === 'wrong' ? c.red.cover : c.main.cover;
+    const borderColor = pico.status === 'normal' ? c.green.outline : pico.status === 'wrong' ? c.red.outline : c.main.outline;
     let badgeBg = '', badgeText = '', badgeLabel = '';
     let tempColor = isDark ? '#60A5FA' : '#3B82F6';
     let humidColor = isDark ? '#4ADE80' : '#22C55E';
@@ -99,16 +102,20 @@ function LargePicoCard({ pico, serverId, wide, isDark }: { pico: Pico; serverId:
     const lightVal = pico.light ?? 0;
 
     return (
-        <Pressable
+        <AnimatedPressable
             accessibilityRole="button"
             accessibilityLabel={`${pico.name} 상세 보기`}
             onPress={() => router.push({ pathname: '/server/[id]/[pico]', params: { id: serverId, pico: pico.id ?? pico.name } })}
-            style={{ width: '48%', marginBottom: wide * 4 }}
+            style={{ width: cardWidth, marginBottom: 12 }}
         >
             <View style={[styles.largePico, {
-                backgroundColor: cardBg, borderColor, borderRadius: wide * 4.5,
-                padding: wide * 4, borderWidth: 1, minHeight: wide * 52,
-                shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: wide * 2, elevation: 1.5,
+                backgroundColor: cardBg, borderColor, borderRadius: 14,
+                padding: 15, borderWidth: 1, aspectRatio: 1,
+                shadowColor: '#10231E',
+                shadowOffset: { width: 0, height: 3 },
+                shadowOpacity: isDark ? 0.16 : 0.05,
+                shadowRadius: 9,
+                elevation: isDark ? 2 : 2,
             }]}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: wide * 3.5 }}>
                     <Text style={[styles.largePicoTitle, { color: c.main.text, fontSize: wide * 4.2 }]} numberOfLines={1}>{pico.name}</Text>
@@ -134,7 +141,7 @@ function LargePicoCard({ pico, serverId, wide, isDark }: { pico: Pico; serverId:
                     </View>
                 </>}
             </View>
-        </Pressable>
+        </AnimatedPressable>
     );
 }
 
@@ -146,7 +153,9 @@ export default function ServerDetail() {
     const { isDark } = useTheme();
     const c = isDark ? Colors.dark : Colors.light;
     const { width, height } = useWindowDimensions();
-    const wide = Math.min(width, height) * 0.01;
+    const wide = Math.min(Math.min(width, height) * 0.01, 4);
+    const gridColumns = width >= 900 ? 3 : 2;
+    const cardWidth: '32%' | '48%' = gridColumns === 3 ? '32%' : '48%';
 
     const { servers, loaded } = useServerAddress();
     const serverConfig = servers.find(s => s.id === id);
@@ -222,21 +231,21 @@ export default function ServerDetail() {
     return (
         <View style={[styles.container, { backgroundColor: c.background }]}>
             {/* Header */}
-            <View style={[styles.header, { paddingHorizontal: wide * 6, paddingTop: wide * 8, marginBottom: wide * 2 }]}>
-                <Pressable onPress={() => router.back()}
-                    style={[styles.headerIcon, { backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : '#FFFFFF' }]}>
-                    <Ionicons name="chevron-back" size={wide * 5} color={c.main.text} />
-                </Pressable>
+            <View style={[styles.header, { width: '100%', maxWidth: 1160, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 20, paddingTop: width >= 700 ? 30 : 26, marginBottom: 8 }]}>
+                <AnimatedPressable onPress={() => router.back()}
+                    style={[styles.headerIcon, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
+                    <Ionicons name="chevron-back" size={20} color={c.main.text} />
+                </AnimatedPressable>
                 <View style={{ flex: 1 }} />
-                <Pressable onPress={() => router.push({ pathname: '/server/[id]/setting', params: { id: id }})}
-                    style={[styles.headerIcon, { backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : '#FFFFFF' }]}>
-                    <Ionicons name="settings-sharp" size={wide * 5} color={c.main.text} />
-                </Pressable>
+                <AnimatedPressable onPress={() => router.push({ pathname: '/server/[id]/setting', params: { id: id }})}
+                    style={[styles.headerIcon, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
+                    <Ionicons name="settings-outline" size={18} color={c.main.text} />
+                </AnimatedPressable>
             </View>
 
             <ScrollView
                 style={styles.scroll}
-                contentContainerStyle={{ paddingHorizontal: wide * 6, paddingBottom: wide * 10 }}
+                contentContainerStyle={{ width: '100%', maxWidth: 1160, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 20, paddingBottom: 32 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh}
@@ -245,7 +254,7 @@ export default function ServerDetail() {
             >
                 {/* Title */}
                 <View style={{ marginBottom: wide * 2 }}>
-                    <Text style={[styles.serverTitle, { color: c.main.text, fontSize: wide * 7.5 }]}>{serverConfig?.name ?? id}</Text>
+                    <Text style={[styles.serverTitle, { color: c.main.text, fontSize: 28 }]}>{serverConfig?.name ?? id}</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: wide * 0.8 }}>
                         <View style={[styles.urlDot, { backgroundColor: error ? '#F87171' : c.accent }]} />
                         <Text style={{ fontFamily: 'Pretendard-Regular', fontSize: wide * 2.8, color: c.subText, marginLeft: wide * 1.5 }} numberOfLines={1}>
@@ -280,36 +289,39 @@ export default function ServerDetail() {
                     <>
                         {/* Filter segments */}
                         <View style={[styles.segmentContainer, {
-                            backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : '#F1F5F9',
-                            borderRadius: wide * 3, borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-                            borderWidth: 1, padding: wide * 1, marginBottom: wide * 6,
+                            backgroundColor: c.sub.cover,
+                            borderRadius: 14, borderColor: c.main.outline,
+                            borderWidth: 1, padding: 4, marginBottom: 18,
                         }]}>
                             {(['normal', 'all', 'wrong'] as FilterType[]).map((type) => {
                                 const isActive = filter === type;
                                 const label = type === 'normal' ? '정상' : type === 'wrong' ? '점검 요망' : '전체';
-                                let activeBg = isDark ? '#1C2936' : '#FFFFFF';
+                                        let activeBg = c.main.cover;
                                 let activeTxt = type === 'wrong' ? (isDark ? '#FB7185' : '#E11D48')
                                     : type === 'all' ? (isDark ? '#E2E8F0' : '#1E293B')
                                         : (isDark ? '#4ADE80' : '#15803D');
                                 return (
-                                    <Pressable key={type} onPress={() => setFilter(type)} style={[
+                                    <AnimatedPressable key={type} selected={filter === type} onPress={() => setFilter(type)} style={[
                                         styles.segmentButton,
-                                        isActive && { backgroundColor: activeBg, borderRadius: wide * 2.2, elevation: 1 }
+                                        isActive && { backgroundColor: activeBg, borderRadius: 10, elevation: 1, shadowColor: '#10231E', shadowOpacity: 0.05, shadowRadius: 4 }
                                     ]}>
                                         <Text style={{
                                             color: isActive ? activeTxt : (isDark ? '#64748B' : '#94A3B8'),
                                             fontSize: wide * 3.2,
                                             fontFamily: isActive ? 'Pretendard-Bold' : 'Pretendard-Medium',
                                         }}>{label}</Text>
-                                    </Pressable>
+                                    </AnimatedPressable>
                                 );
                             })}
                         </View>
 
                         {/* Pico Cards Grid */}
-                        <View style={styles.gridContainer}>
+                        <View style={[styles.gridContainer, { maxWidth: 640, alignSelf: 'center', width: '100%' }]}>
                             {filteredPicos.map((pico, idx) => (
-                                <LargePicoCard key={idx} pico={pico} serverId={serverConfig.id} wide={wide} isDark={isDark} />
+                                <LargePicoCard key={pico.id ?? (pico.name + '-' + idx)} pico={pico} serverId={serverConfig.id} wide={wide} isDark={isDark} cardWidth={cardWidth} />
+                            ))}
+                            {filteredPicos.length > 0 && Array.from({ length: (gridColumns - (filteredPicos.length % gridColumns)) % gridColumns }).map((_, idx) => (
+                                <View key={'empty-' + idx} style={{ width: cardWidth, marginBottom: 12, aspectRatio: 1 }} />
                             ))}
                         </View>
                     </>
@@ -322,20 +334,14 @@ export default function ServerDetail() {
 const styles = StyleSheet.create({
     container: { flex: 1 },
     header: { flexDirection: 'row', alignItems: 'center' },
-    headerIcon: {
-        width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center',
-        shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.02, shadowRadius: 3, elevation: 1.5,
-    },
+    headerIcon: { width: 40, height: 40, borderRadius: 12, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
     scroll: { flex: 1 },
     serverTitle: { fontFamily: 'Pretendard-Bold' },
     urlDot: { width: 6, height: 6, borderRadius: 3 },
-    errorBanner: {
-        flexDirection: 'row', alignItems: 'center', borderWidth: 1,
-        borderRadius: 12, padding: 12,
-    },
-    segmentContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    segmentButton: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 10 },
-    gridContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
+    errorBanner: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 8, padding: 12 },
+    segmentContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 4 },
+    segmentButton: { flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 40, paddingVertical: 9 },
+    gridContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 16 },
     largePico: { borderWidth: 1 },
     largePicoTitle: { fontFamily: 'Pretendard-Bold' },
     disconnectedTxt: { fontFamily: 'Pretendard-Medium', textAlign: 'center' },
