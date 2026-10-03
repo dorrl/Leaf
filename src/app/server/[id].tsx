@@ -301,7 +301,7 @@ export default function ServerDetail() {
                                     : type === 'all' ? (isDark ? '#E2E8F0' : '#1E293B')
                                         : (isDark ? '#4ADE80' : '#15803D');
                                 return (
-                                    <AnimatedPressable key={type} onPress={() => setFilter(type)} style={[
+                                    <AnimatedPressable key={type} selected={filter === type} onPress={() => setFilter(type)} style={[
                                         styles.segmentButton,
                                         isActive && { backgroundColor: activeBg, borderRadius: 10, elevation: 1, shadowColor: '#10231E', shadowOpacity: 0.05, shadowRadius: 4 }
                                     ]}>

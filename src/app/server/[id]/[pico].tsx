@@ -609,7 +609,7 @@ export default function PicoStatus() {
                     <View style={[styles.periodMenu, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
                         <Text style={{ color: c.main.text, fontFamily: 'Pretendard-Bold', fontSize: wide * 4, marginBottom: wide * 2 }}>기간 선택</Text>
                         {periods.map(option => (
-                            <AnimatedPressable key={option.id} onPress={() => { setLoading(true); setPeriod(option.id); setPeriodMenuOpen(false); }} style={[styles.periodOption, { borderTopColor: c.main.outline }]}>
+                            <AnimatedPressable key={option.id} selected={period === option.id} onPress={() => { setLoading(true); setPeriod(option.id); setPeriodMenuOpen(false); }} style={[styles.periodOption, { borderTopColor: c.main.outline }]}>
                                 <Text style={{ color: period === option.id ? c.accent : c.main.text, fontFamily: period === option.id ? 'Pretendard-Bold' : 'Pretendard-Regular', fontSize: wide * 3.2 }}>{option.label}</Text>
                                 {period === option.id && <Ionicons name="checkmark" size={wide * 4} color={c.accent} />}
                             </AnimatedPressable>

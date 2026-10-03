@@ -1,9 +1,14 @@
 import type { ReactNode } from 'react';
+import { useEffect } from 'react';
 import { Pressable, type PressableProps } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
-export function AnimatedPressable({ children, onPressIn, onPressOut, ...props }: PressableProps & { children?: ReactNode }) {
-    const scale = useSharedValue(1);
+export function AnimatedPressable({ children, selected = false, onPressIn, onPressOut, ...props }: PressableProps & { children?: ReactNode; selected?: boolean }) {
+    const scale = useSharedValue(selected ? 1.02 : 1);
+
+    useEffect(() => {
+        scale.value = withSpring(selected ? 1.02 : 1, { damping: 18, stiffness: 300 });
+    }, [selected, scale]);
 
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [{ scale: scale.value }],
@@ -17,7 +22,7 @@ export function AnimatedPressable({ children, onPressIn, onPressOut, ...props }:
                 onPressIn?.(event);
             }}
             onPressOut={(event) => {
-                scale.value = withSpring(1, { damping: 18, stiffness: 420 });
+                scale.value = withSpring(selected ? 1.02 : 1, { damping: 18, stiffness: 420 });
                 onPressOut?.(event);
             }}
         >

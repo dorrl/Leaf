@@ -7,27 +7,38 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-na
 import { Platform, View } from 'react-native';
 
 function TabIcon({ focused, color, iconName, isDark }: { focused: boolean; color: string; iconName: keyof typeof Ionicons.glyphMap; isDark: boolean }) {
-    const scale = useSharedValue(focused ? 1 : 0.92);
+    const scale = useSharedValue(focused ? 1.04 : 0.94);
+    const highlight = useSharedValue(focused ? 1 : 0);
 
     useEffect(() => {
-        scale.value = withSpring(focused ? 1 : 0.92, { damping: 15, stiffness: 300 });
-    }, [focused, scale]);
+        scale.value = withSpring(focused ? 1.04 : 0.94, { damping: 15, stiffness: 300 });
+        highlight.value = withSpring(focused ? 1 : 0, { damping: 18, stiffness: 260 });
+    }, [focused, scale, highlight]);
 
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [{ scale: scale.value }],
     }), [scale]);
 
+    const highlightStyle = useAnimatedStyle(() => ({
+        opacity: highlight.value,
+        transform: [{ scaleX: 0.82 + highlight.value * 0.18 }],
+    }), [highlight]);
+
     return (
         <Animated.View style={[{
             alignItems: 'center',
             justifyContent: 'center',
-            width: 32,
-            height: 28,
-            borderRadius: 7,
-            backgroundColor: focused
-                ? (isDark ? 'rgba(135,146,247,0.18)' : 'rgba(88,101,242,0.1)')
-                : 'transparent',
+            width: 42,
+            height: 32,
+            borderRadius: 9,
         }, animatedStyle]}>
+            <Animated.View style={[{
+                position: 'absolute',
+                width: 36,
+                height: 28,
+                borderRadius: 8,
+                backgroundColor: isDark ? 'rgba(135,146,247,0.18)' : 'rgba(88,101,242,0.10)',
+            }, highlightStyle]} />
             <Ionicons name={iconName} size={19} color={color} />
         </Animated.View>
     );

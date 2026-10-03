@@ -142,6 +142,7 @@ export default function Notifications() {
         const selected = activeServerId === serverId;
         return <AnimatedPressable
             key={serverId ?? 'all'}
+            selected={selected}
             accessibilityRole="button"
             accessibilityState={{ selected }}
             onPress={() => setSelectedServerId(serverId)}
