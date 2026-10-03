@@ -144,7 +144,7 @@ export default function Notifications() {
             accessibilityRole="button"
             accessibilityState={{ selected }}
             onPress={() => setSelectedServerId(serverId)}
-            style={{ height: 38, minHeight: 38, alignSelf: isWideLayout ? 'stretch' : 'flex-start', minWidth: isWideLayout ? undefined : 84, flexGrow: 0, flexShrink: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: selected ? c.accent : c.main.outline, backgroundColor: selected ? c.sub.cover : c.main.cover }}
+            style={{ minHeight: 38, alignSelf: isWideLayout ? 'stretch' : 'flex-start', minWidth: isWideLayout ? undefined : 84, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: selected ? c.accent : c.main.outline, backgroundColor: selected ? c.sub.cover : c.main.cover }}
         >
             <Text style={{ fontFamily: selected ? 'Pretendard-SemiBold' : 'Pretendard-Medium', fontSize: 13, color: selected ? c.main.text : c.subText, marginRight: 10 }} numberOfLines={1}>{label}</Text>
             <Text style={{ fontFamily: 'Pretendard-Medium', fontSize: 11, color: selected ? c.main.text : c.subText }}>{count}</Text>
@@ -207,24 +207,21 @@ export default function Notifications() {
                     {deleting ? <ActivityIndicator size="small" color={c.red.text} /> : <Ionicons name="trash-outline" size={18} color={c.red.text} />}
                 </Pressable>
             </View>
-            {!isWideLayout && <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={{ width: '100%', height: 46, flexGrow: 0, flexShrink: 0 }}
-                contentContainerStyle={{ paddingHorizontal: 16, height: 38, alignItems: 'center', gap: 8 }}
-            >
+            {!isWideLayout && <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 6, gap: 8, flexGrow: 0 }}>
                 {renderServerFilter(null, '모든 서버', items.length)}
                 {servers.map(server => renderServerFilter(server.id, server.name, serverCounts[server.id] ?? 0))}
             </ScrollView>}
-            <ScrollView
-                style={{ flex: 1, width: '100%' }}
-                contentContainerStyle={{ paddingHorizontal: isWideLayout ? 16 : 8, paddingBottom: 100 }}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); void load(); }} tintColor={c.accent} colors={[c.accent]} />}
-            >
-                <View style={{ width: '100%', maxWidth: 1120, alignSelf: 'center' }}>
-                    {loading ? <ActivityIndicator color={c.accent} style={{ marginTop: 32 }} /> : visibleItems.length ? visibleItems.map(item => <NotificationRow key={`${item.serverId}-${item.id}`} item={item} isDark={isDark} showServerName={!activeServerId} />) : <Text style={{ padding: 18, fontFamily: 'Pretendard-Regular', color: c.subText }}>{items.length ? '이 서버에는 알림이 없습니다.' : '현재 알림이 없습니다.'}</Text>}
-                </View>
-            </ScrollView>
+            <View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
+                <ScrollView
+                    style={{ flex: 1, width: '100%' }}
+                    contentContainerStyle={{ paddingHorizontal: isWideLayout ? 16 : 8, paddingBottom: 100 }}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); void load(); }} tintColor={c.accent} colors={[c.accent]} />}
+                >
+                    <View style={{ width: '100%', maxWidth: 1120, alignSelf: 'center' }}>
+                        {loading ? <ActivityIndicator color={c.accent} style={{ marginTop: 32 }} /> : visibleItems.length ? visibleItems.map(item => <NotificationRow key={`${item.serverId}-${item.id}`} item={item} isDark={isDark} showServerName={!activeServerId} />) : <Text style={{ padding: 18, fontFamily: 'Pretendard-Regular', color: c.subText }}>{items.length ? '이 서버에는 알림이 없습니다.' : '현재 알림이 없습니다.'}</Text>}
+                    </View>
+                </ScrollView>
+            </View>
         </View>
         <ConfirmModal
             visible={deleteModalVisible}
