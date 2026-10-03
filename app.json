@@ -43,14 +43,7 @@
       "expo-font",
       "expo-image",
       "expo-status-bar",
-      "expo-web-browser",
-      "expo-background-task",
-      [
-        "expo-notifications",
-        {
-          "defaultChannel": "smartfarm-alerts"
-        }
-      ]
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -62,5 +55,18 @@
         "projectId": "f1d33d57-b0e9-4b1c-9320-cc52d32e3696"
       }
     }
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "production": {}
   }
 }

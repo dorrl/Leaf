@@ -153,7 +153,7 @@ export default function ServerDetail() {
     const c = isDark ? Colors.dark : Colors.light;
     const { width, height } = useWindowDimensions();
     const wide = Math.min(Math.min(width, height) * 0.01, 4);
-    const cardWidth: '32%' | '48.5%' | '100%' = width >= 1180 ? '32%' : width >= 700 ? '48.5%' : '100%';
+    const cardWidth: '32%' | '48.5%' = width >= 1180 ? '32%' : '48.5%';
 
     const { servers, loaded } = useServerAddress();
     const serverConfig = servers.find(s => s.id === id);

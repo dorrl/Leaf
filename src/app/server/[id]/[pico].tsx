@@ -228,17 +228,9 @@ function MetricChart({ metric, readings, chartWidth, wide, isDark, optimalRange,
     const minimum = Math.min(...points.map(point => point.value));
     const maximum = Math.max(...points.map(point => point.value));
     const range = maximum - minimum || Math.max(Math.abs(maximum) * 0.1, 1);
-    const plotBottom = plotTop + plotHeight;
-    const sensorRange = optimalRange?.[metric.key];
-    const valueToY = (value: number) => plotBottom - ((value - minimum) / range) * plotHeight;
-    const clampToPlot = (value: number) => Math.max(plotTop, Math.min(plotBottom, value));
-    const lowerLimitY = sensorRange ? clampToPlot(valueToY(sensorRange.min)) : plotBottom;
-    const upperLimitY = sensorRange ? clampToPlot(valueToY(sensorRange.max)) : plotTop;
-    const lowerOutsideHeight = sensorRange ? plotBottom - lowerLimitY : 0;
-    const upperOutsideHeight = sensorRange ? upperLimitY - plotTop : 0;
     const coordinates = points.map(point => ({
         x: sampled.length === 1 ? chartWidth / 2 : point.index * chartWidth / (sampled.length - 1),
-        y: valueToY(point.value),
+        y: plotTop + plotHeight - ((point.value - minimum) / range) * plotHeight,
         value: point.value,
         reading: point.reading,
         index: point.index,
@@ -254,6 +246,7 @@ function MetricChart({ metric, readings, chartWidth, wide, isDark, optimalRange,
             at: point.reading.at,
         }, optimalRange, durationHours, dayKey !== null && completeLightDays.has(dayKey) && dayKey < todayKey);
     };
+    const outOfRangePoints = coordinates.filter(isPointOutOfRange);
     const path = coordinates.reduce((result, point, index) => {
         if (index === 0) return `M ${point.x} ${point.y}`;
         const previous = coordinates[index - 1];
@@ -313,8 +306,12 @@ function MetricChart({ metric, readings, chartWidth, wide, isDark, optimalRange,
                 onResponderTerminate={endTouch}
             >
                 <Svg width={chartWidth} height={chartHeight} style={StyleSheet.absoluteFill} pointerEvents="none">
-                    {lowerOutsideHeight > 0 && <Rect x={0} y={lowerLimitY} width={chartWidth} height={lowerOutsideHeight} fill={isDark ? 'rgba(248,113,113,0.16)' : 'rgba(239,68,68,0.12)'} />}
-                    {upperOutsideHeight > 0 && <Rect x={0} y={plotTop} width={chartWidth} height={upperOutsideHeight} fill={isDark ? 'rgba(248,113,113,0.16)' : 'rgba(239,68,68,0.12)'} />}
+                    {outOfRangePoints.map(point => {
+                        const segmentWidth = chartWidth / Math.max(sampled.length, 1);
+                        const x = Math.max(0, point.x - segmentWidth / 2);
+                        const right = Math.min(chartWidth, point.x + segmentWidth / 2);
+                        return <Rect key={`out-${point.index}`} x={x} y={plotTop} width={right - x} height={plotHeight} fill={isDark ? 'rgba(248,113,113,0.16)' : 'rgba(239,68,68,0.12)'} />;
+                    })}
                     {[0, 1, 2].map(line => (
                         <Line key={line} x1={0} x2={chartWidth} y1={plotTop + line * plotHeight / 2} y2={plotTop + line * plotHeight / 2} stroke={isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)'} strokeWidth={1} />
                     ))}

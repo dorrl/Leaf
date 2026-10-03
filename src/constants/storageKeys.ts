@@ -1,1 +1,0 @@
-export const SERVER_CONFIGS_STORAGE_KEY = '@smartfarm/server-configs';
