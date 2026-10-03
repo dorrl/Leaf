@@ -144,7 +144,7 @@ export default function Notifications() {
             accessibilityRole="button"
             accessibilityState={{ selected }}
             onPress={() => setSelectedServerId(serverId)}
-            style={{ minHeight: 38, alignSelf: isWideLayout ? 'stretch' : 'flex-start', minWidth: isWideLayout ? undefined : 84, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: selected ? c.accent : c.main.outline, backgroundColor: selected ? c.sub.cover : c.main.cover }}
+            style={{ height: 38, minHeight: 38, alignSelf: isWideLayout ? 'stretch' : 'flex-start', minWidth: isWideLayout ? undefined : 84, flexGrow: 0, flexShrink: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: selected ? c.accent : c.main.outline, backgroundColor: selected ? c.sub.cover : c.main.cover }}
         >
             <Text style={{ fontFamily: selected ? 'Pretendard-SemiBold' : 'Pretendard-Medium', fontSize: 13, color: selected ? c.main.text : c.subText, marginRight: 10 }} numberOfLines={1}>{label}</Text>
             <Text style={{ fontFamily: 'Pretendard-Medium', fontSize: 11, color: selected ? c.main.text : c.subText }}>{count}</Text>
