@@ -1,11 +1,11 @@
-import { Ionicons } from '@expo/vector-icons';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
-import { Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-export function BackButton({ onPress, color, backgroundColor }: {
+export function BackButton({ onPress, color, backgroundColor, borderColor }: {
     onPress: () => void;
     color: string;
     backgroundColor: string;
+    borderColor: string;
 }) {
     return (
         <AnimatedPressable
@@ -17,7 +17,7 @@ export function BackButton({ onPress, color, backgroundColor }: {
                 height: 40,
                 borderRadius: 8,
                 borderWidth: 1,
-                borderColor: backgroundColor,
+                borderColor,
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor,

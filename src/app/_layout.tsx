@@ -1,3 +1,4 @@
+import { initializeNotificationForeground, subscribeNotificationForegroundPolling } from '@/services/notificationBackground';
 import { ServerAddressProvider } from '@/hooks/useServerAddress';
 import { ThemeProvider } from '@/hooks/useTheme';
 import { useFonts } from 'expo-font';
@@ -23,27 +24,28 @@ export default function RootLayout() {
     });
 
     useEffect(() => {
-        if (Platform.OS === 'android') {
-            NavigationBar.setVisibilityAsync('hidden');
-        }
+        if (Platform.OS === 'android') NavigationBar.setVisibilityAsync('hidden');
     }, []);
 
     useEffect(() => {
-        if (loaded || error) {
-            SplashScreen.hideAsync();
-        }
+        if (!loaded && !error) return;
+        initializeNotificationForeground();
+        const unsubscribe = subscribeNotificationForegroundPolling();
+        return () => unsubscribe();
     }, [loaded, error]);
 
-    if (!loaded && !error) {
-        return null;
-    }
+    useEffect(() => {
+        if (loaded || error) SplashScreen.hideAsync();
+    }, [loaded, error]);
+
+    if (!loaded && !error) return null;
 
     return (
         <ThemeProvider>
             <ServerAddressProvider>
                 <Stack screenOptions={{ headerShown: false, navigationBarHidden: true }}>
                     <Stack.Screen name="(tabs)" />
-                    <Stack.Screen name='server' />
+                    <Stack.Screen name="server" />
                 </Stack>
             </ServerAddressProvider>
         </ThemeProvider>

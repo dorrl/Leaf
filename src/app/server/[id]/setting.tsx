@@ -1,8 +1,8 @@
-import { Colors } from '@/constants/Colors';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { BackButton } from '@/components/BackButton';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { FormField } from '@/components/FormField';
+import { Colors } from '@/constants/Colors';
 import { ServerConfig, useServerAddress } from '@/hooks/useServerAddress';
 import { useTheme } from '@/hooks/useTheme';
 import { clearServerSnapshot } from '@/utils/localData';
@@ -143,9 +143,9 @@ export default function ServerSetting() {
     if (server === undefined) return
 
     return (
-        <ScrollView style={{ flex: 1, backgroundColor: c.background }} contentContainerStyle={{ width: '100%', maxWidth: 760, alignSelf: 'center', paddingHorizontal: 16, paddingTop: 44, paddingBottom: 40 }}>
+        <ScrollView style={{ flex: 1, backgroundColor: c.background }} contentContainerStyle={{ width: '100%', maxWidth: 760, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 20, paddingTop: width >= 700 ? 30 : 26, marginBottom: 8 }}>
             <View style={{ paddingTop: 2 }}>
-                <BackButton onPress={() => router.back()} color={c.main.text} backgroundColor={isDark ? 'rgba(255,255,255,0.04)' : '#FFFFFF'} />
+                <BackButton onPress={() => router.back()} color={c.main.text} backgroundColor={c.main.cover} borderColor={c.main.outline} />
             </View>
             <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 25, color: c.main.text, marginTop: 20 }}>{server.name} 설정</Text>
             <Text style={[styles.heading, { color: c.subText, marginTop: 22 }]}>센서 및 데이터 보관</Text>

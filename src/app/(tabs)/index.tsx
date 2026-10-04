@@ -410,17 +410,20 @@ export default function Index() {
         <View style={{ flex: 1, backgroundColor: c.background }}>
             <ScrollView
                 style={[styles.scroll, { backgroundColor: c.background }]}
-                contentContainerStyle={{ paddingBottom: 64, paddingTop: wide >= 3.0 ? 24 : 16, alignItems: 'center' }}
+                contentContainerStyle={{ paddingBottom: 64, paddingTop: wide >= 3.0 ? 28 : 20, alignItems: 'center' }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={c.accent} colors={[c.accent]} />
                 }
             >
                 {/* Custom Premium Header */}
-                <View style={[styles.header, { width: '100%', maxWidth: 980, paddingHorizontal: wide >= 3.0 ? 28 : 20, marginBottom: wide * 3 }]}>
-                    <View style={[styles.headerIconContainer, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : '#FFFFFF' }]}>
+                <View style={[styles.header, { width: '100%', maxWidth: 980, paddingHorizontal: wide >= 3.0 ? 28 : 20, marginBottom: wide * 2 }]}>
+                    <View style={[styles.headerIconContainer, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : '#FFFFFF', width: wide * 10, height: wide * 10 }]}>
                         <Ionicons name="leaf" size={wide * 5} color={c.accent} />
                     </View>
+                    <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: wide * 7, color: c.main.text, marginLeft: wide * 2 }}>
+                        Leaf
+                    </Text>
                     <View style={{ flex: 1 }} />
                     <AnimatedPressable
                         onPress={() => router.push('/settings')}
@@ -432,9 +435,7 @@ export default function Index() {
 
                 {/* Dashboard greeting title */}
                 <View style={{ width: '100%', maxWidth: 980, paddingHorizontal: wide >= 3.0 ? 28 : 20, marginBottom: wide * 5, alignItems: 'flex-start' }}>
-                    <Text style={{ width: '100%', fontFamily: 'Pretendard-Bold', fontSize: wide * 7, color: c.main.text }}>
-                        스마트팜 허브
-                    </Text>
+
 
                     {/* Stats Summary Panel */}
                     <View style={[
@@ -456,7 +457,7 @@ export default function Index() {
                                 <Text style={{ fontSize: wide * 3.2, fontFamily: 'Pretendard-Medium', color: c.main.text, marginLeft: wide * 2, flex: 1 }} numberOfLines={1}>
                                     {offlineServers > 0
                                         ? `${offlineServers}개의 서버가 오프라인 상태입니다`
-                                        : (wrongPicos > 0 ? `${wrongPicos}개의 경고 상태 확인 됨` : '모든 온실 시스템이 안정적입니다')}
+                                        : (wrongPicos > 0 ? `${wrongPicos}개의 경고 상태 확인 됨` : '모든 작물 상태가 안정적입니다')}
                                 </Text>
                             </View>
                             <Text style={{ fontSize: wide * 2.8, fontFamily: 'Pretendard-Regular', color: c.subText }}>
