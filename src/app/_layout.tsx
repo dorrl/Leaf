@@ -1,4 +1,8 @@
-import { initializeNotificationForeground, subscribeNotificationForegroundPolling } from '@/services/notificationBackground';
+import {
+    initializeNotificationForeground,
+    startNotificationForegroundPolling,
+    subscribeNotificationForegroundPolling,
+} from '@/services/notificationBackground';
 import { ServerAddressProvider } from '@/hooks/useServerAddress';
 import { ThemeProvider } from '@/hooks/useTheme';
 import { useFonts } from 'expo-font';
@@ -29,9 +33,22 @@ export default function RootLayout() {
 
     useEffect(() => {
         if (!loaded && !error) return;
-        initializeNotificationForeground();
-        const unsubscribe = subscribeNotificationForegroundPolling();
-        return () => unsubscribe();
+
+        let active = true;
+        let unsubscribe: (() => void) | null = null;
+
+        void (async () => {
+            const allowed = await initializeNotificationForeground();
+            if (!active || !allowed) return;
+
+            startNotificationForegroundPolling();
+            unsubscribe = subscribeNotificationForegroundPolling();
+        })();
+
+        return () => {
+            active = false;
+            unsubscribe?.();
+        };
     }, [loaded, error]);
 
     useEffect(() => {

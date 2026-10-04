@@ -28,10 +28,11 @@
       "expo-image",
       "expo-status-bar",
       "expo-web-browser",
+      "expo-notifications",
       ["expo-navigation-bar", {"hidden": true}]
     ],
     "experiments": {"typedRoutes": true, "reactCompiler": true},
-    "extra": {"router": {}, "eas": {"projectId": "f1d33d57-b0e9-4b1c-9320-cc52d32e3696"}}
+    "extra": {"router": {}, "eas": {"projectId": "f1d33d57-b0e9-4b1c-9320-cc52d32e3695"}}
   },
   "build": {
     "development": {"developmentClient": true, "distribution": "internal"},
