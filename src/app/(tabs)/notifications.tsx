@@ -1,6 +1,6 @@
+import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { Colors } from '@/constants/Colors';
-import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { useServerAddress } from '@/hooks/useServerAddress';
 import { useTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
@@ -148,8 +148,7 @@ export default function Notifications() {
             onPress={() => setSelectedServerId(serverId)}
             style={{ height: 38, minHeight: 38, alignSelf: isWideLayout ? 'stretch' : 'flex-start', minWidth: isWideLayout ? undefined : 84, flexGrow: 0, flexShrink: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: selected ? c.accent : c.main.outline, backgroundColor: selected ? c.sub.cover : c.main.cover }}
         >
-            <Text style={{ fontFamily: selected ? 'Pretendard-SemiBold' : 'Pretendard-Medium', fontSize: 13, color: selected ? c.main.text : c.subText, marginRight: 10 }} numberOfLines={1}>{label}</Text>
-            <Text style={{ fontFamily: 'Pretendard-Medium', fontSize: 11, color: selected ? c.main.text : c.subText }}>{count}</Text>
+            <Text style={{ fontFamily: selected ? 'Pretendard-SemiBold' : 'Pretendard-Medium', fontSize: 13, color: selected ? c.main.text : c.subText, marginRight: 10 }} numberOfLines={1}>{label} ({count})</Text>
         </AnimatedPressable>;
     };
 
@@ -194,7 +193,7 @@ export default function Notifications() {
         <View style={{ flex: 1, minWidth: 0 }}>
             <View style={{ width: '100%', maxWidth: 1080, alignSelf: 'center', paddingHorizontal: isWideLayout ? 28 : 16, paddingTop: isWideLayout ? 20 : 20, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
                 <View style={{ flex: 1 }}>
-                    <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 23, color: c.main.text }}>알림</Text>
+                    <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 25, color: c.main.text }}>알림</Text>
                     <Text style={{ fontFamily: 'Pretendard-Regular', fontSize: 12, color: c.subText, marginTop: 3 }}>
                         {selectedServer?.name ?? '모든 서버'} · {visibleItems.length}개
                     </Text>

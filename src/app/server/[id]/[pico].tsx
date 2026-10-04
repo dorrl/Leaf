@@ -1,5 +1,6 @@
-import { Colors } from '@/constants/Colors';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
+import { BackButton } from '@/components/BackButton';
+import { Colors } from '@/constants/Colors';
 import { usePico, type PicoReadingPeriod } from '@/hooks/usePico';
 import { useServerAddress } from '@/hooks/useServerAddress';
 import { useTheme } from '@/hooks/useTheme';
@@ -506,14 +507,12 @@ export default function PicoStatus() {
 
     return (
         <View style={[styles.container, { backgroundColor: c.background }]}>
-            <ScrollView style={styles.scroll} scrollEnabled={!chartTouchActive} contentContainerStyle={{ width: '100%', maxWidth: 1120, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 16, paddingTop: width >= 700 ? 10 : 6, paddingBottom: 40 }} refreshControl={
+            <ScrollView style={styles.scroll} scrollEnabled={!chartTouchActive} contentContainerStyle={{ width: '100%', maxWidth: 1120, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 16, paddingTop: width >= 700 ? 30 : 26, paddingBottom: 40 }} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={c.accent} colors={[c.accent]} />
             }>
                 { /* back & title */ }
-                <View style={[styles.header, { paddingTop: wide * 3, paddingBottom: wide * 2 }]}>
-                    <AnimatedPressable accessibilityRole="button" accessibilityLabel="뒤로가기" onPress={() => router.back()} style={[styles.headerIcon, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
-                        <Ionicons name="chevron-back" size={wide * 5} color={c.main.text} />
-                    </AnimatedPressable>
+                <View style={[styles.header, { paddingBottom: wide * 2 }]}>
+                    <BackButton onPress={router.back} color={c.main.text} backgroundColor={c.main.cover} borderColor={c.main.outline}></BackButton>
                     <View style={{ flex: 1 }} />
                 </View>
 
@@ -546,7 +545,12 @@ export default function PicoStatus() {
                         <View style={[styles.section, { backgroundColor: c.main.cover, borderColor: c.main.outline, padding: wide * 4, overflow: 'hidden' }]}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: wide * 2 }}>
                                 <Text style={{ color: c.main.text, fontFamily: 'Pretendard-SemiBold', fontSize: wide * 4 }}>센서 기록</Text>
-                                <AnimatedPressable accessibilityRole="button" accessibilityLabel="그래프 기간 선택" onPress={() => setPeriodMenuOpen(true)} style={[styles.periodButton, { borderColor: c.main.outline, backgroundColor: c.sub.cover }]}><Text style={{ color: c.main.text, fontFamily: 'Pretendard-Medium', fontSize: wide * 2.8 }}>{selectedPeriod.label}</Text><Ionicons name="chevron-down" size={wide * 3.2} color={c.subText} /></AnimatedPressable>
+                                <AnimatedPressable accessibilityRole="button" accessibilityLabel="그래프 기간 선택" onPress={() => setPeriodMenuOpen(true)} style={[styles.periodButton, { borderColor: c.main.outline, backgroundColor: c.sub.cover }]}>
+                                    <View style={{ flexDirection: 'row' }}>
+                                        <Text style={{ color: c.main.text, fontFamily: 'Pretendard-Medium', fontSize: wide * 2.8, marginRight: wide * 1 }}>{selectedPeriod.label}</Text>
+                                        <Ionicons name="chevron-down" size={wide * 3.2} color={c.subText} />
+                                    </View>
+                                </AnimatedPressable>
                             </View>
                             {readings.length === 0 ? <Text style={{ color: c.subText, fontFamily: 'Pretendard-Regular', paddingVertical: wide * 5 }}>선택한 기간에 측정 기록이 없습니다.</Text> : metrics.map(metric => <MetricChart key={metric.key} metric={metric} readings={readings} chartWidth={chartWidth} wide={wide} isDark={isDark} optimalRange={current?.optimalRange} nowTimestamp={latestTimestamp ?? 0} onInteractionChange={setChartTouchActive} />)}
                         </View>
@@ -599,7 +603,7 @@ export default function PicoStatus() {
                             </AnimatedPressable>
                             {rangeMessage && <Text style={{ color: rangeMessage.includes('저장했습니다') ? c.green.text : c.red.text, fontFamily: 'Pretendard-Medium', fontSize: wide * 2.7, marginTop: wide * 2 }}>{rangeMessage}</Text>}
                         </View>
-                    </>
+                    </> 
                 )}
             </ScrollView>
 
@@ -610,8 +614,10 @@ export default function PicoStatus() {
                         <Text style={{ color: c.main.text, fontFamily: 'Pretendard-Bold', fontSize: wide * 4, marginBottom: wide * 2 }}>기간 선택</Text>
                         {periods.map(option => (
                             <AnimatedPressable key={option.id} selected={period === option.id} onPress={() => { setLoading(true); setPeriod(option.id); setPeriodMenuOpen(false); }} style={[styles.periodOption, { borderTopColor: c.main.outline }]}>
-                                <Text style={{ color: period === option.id ? c.accent : c.main.text, fontFamily: period === option.id ? 'Pretendard-Bold' : 'Pretendard-Regular', fontSize: wide * 3.2 }}>{option.label}</Text>
-                                {period === option.id && <Ionicons name="checkmark" size={wide * 4} color={c.accent} />}
+                                <View style={{ flexDirection: 'row' }}>
+                                    <Text style={{ color: period === option.id ? c.accent : c.main.text, fontFamily: period === option.id ? 'Pretendard-Bold' : 'Pretendard-Regular', fontSize: wide * 3.2, marginRight: wide * 2 }}>{option.label}</Text>
+                                    {period === option.id && <Ionicons name="checkmark" size={wide * 4} color={c.accent} />}
+                                </View>
                             </AnimatedPressable>
                         ))}
                     </View>

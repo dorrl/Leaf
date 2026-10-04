@@ -1,5 +1,6 @@
-import { Colors } from '@/constants/Colors';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
+import { BackButton } from '@/components/BackButton';
+import { Colors } from '@/constants/Colors';
 import { useServerAddress } from '@/hooks/useServerAddress';
 import { useTheme } from '@/hooks/useTheme';
 import type { PicoReading, PicoReadingsResponse, PicoStatus } from '@/types/pico';
@@ -232,10 +233,7 @@ export default function ServerDetail() {
         <View style={[styles.container, { backgroundColor: c.background }]}>
             {/* Header */}
             <View style={[styles.header, { width: '100%', maxWidth: 1160, alignSelf: 'center', paddingHorizontal: width >= 700 ? 28 : 20, paddingTop: width >= 700 ? 30 : 26, marginBottom: 8 }]}>
-                <AnimatedPressable onPress={() => router.back()}
-                    style={[styles.headerIcon, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
-                    <Ionicons name="chevron-back" size={20} color={c.main.text} />
-                </AnimatedPressable>
+                <BackButton onPress={router.back} color={c.main.text} backgroundColor={c.main.cover} borderColor={c.main.outline}></BackButton>
                 <View style={{ flex: 1 }} />
                 <AnimatedPressable onPress={() => router.push({ pathname: '/server/[id]/setting', params: { id: id }})}
                     style={[styles.headerIcon, { backgroundColor: c.main.cover, borderColor: c.main.outline }]}>
