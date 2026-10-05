@@ -1,34 +1,20 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AppState, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import * as Notifications from 'expo-notifications';
-import * as BackgroundTask from 'expo-background-task';
-import * as TaskManager from 'expo-task-manager';
 
 const STORAGE_KEY = '@smartfarm/server-configs';
-const SEEN_KEY = '@smartfarm/notification-seen';
 const PERMISSION_REQUESTED_KEY = '@smartfarm/notification-permission-requested';
 const API_PREFIX = 'smartfarm-api-key-';
-const BACKGROUND_TASK_NAME = 'smartfarm-notification-check';
-const FOREGROUND_INTERVAL = 30_000;
-const BACKGROUND_INTERVAL_MINUTES = 15;
 const NOTIFICATION_CHANNEL = 'smartfarm-alerts';
-
-let timer: ReturnType<typeof setInterval> | null = null;
-let running = false;
+const DEVICE_REGISTRATION_PATH = '/notifications/device';
 
 type Server = { id: string; name: string; address: string };
-type Item = { id?: string | number; message?: unknown; picoId?: unknown; picoName?: unknown; createdAt?: unknown };
 
 const getApiKeyStorageKey = (id: string) => {
     const safeId = id.replace(/[^A-Za-z0-9._-]/g, '_');
-    return safeId ? `${API_PREFIX}${safeId}` : '';
+    return safeId ? `smartfarm-api-key-${safeId}` : '';
 };
-
-const getItemKey = (serverId: string, notification: Item) =>
-    notification.id !== undefined && notification.id !== null
-        ? `${serverId}:${String(notification.id)}`
-        : [serverId, notification.createdAt ?? '', notification.picoId ?? '', notification.message ?? ''].join(':');
 
 async function loadServers(): Promise<Server[]> {
     try {
@@ -46,107 +32,30 @@ async function loadServers(): Promise<Server[]> {
     }
 }
 
-async function fetchNewNotifications(): Promise<Array<{ server: Server; notifications: Item[] }>> {
+async function registerDeviceToken(token: string, platform: 'android' | 'ios') {
     const servers = await loadServers();
-    if (!servers.length) return [];
+    if (!servers.length) return;
 
-    const savedSeen = await AsyncStorage.getItem(SEEN_KEY);
-    const seen: Record<string, string[]> = savedSeen ? JSON.parse(savedSeen) : {};
-    const changes: Array<{ server: Server; notifications: Item[] }> = [];
+    await Promise.allSettled(servers.map(async server => {
+        const address = server.address.trim();
+        if (!address) return;
 
-    for (const server of servers) {
-        try {
-            const address = server.address.trim();
-            if (!address) continue;
-            const base = (address.startsWith('http') ? address : `http://${address}`).replace(/\/+$/, '');
-            const apiKey = await SecureStore.getItemAsync(getApiKeyStorageKey(server.id));
-            const response = await fetch(`${base}/notifications`, {
-                headers: { Accept: 'application/json', ...(apiKey ? { 'X-API-Key': apiKey } : {}) },
-            });
-            if (!response.ok) continue;
+        const base = (address.startsWith('http') ? address : `http://${address}`).replace(/\/+$/, '');
+        const apiKey = await SecureStore.getItemAsync(getApiKeyStorageKey(server.id));
 
-            const json: unknown = await response.json();
-            if (!json || typeof json !== 'object') continue;
-            const notifications = Array.isArray((json as { notifications?: unknown }).notifications)
-                ? (json as { notifications: unknown[] }).notifications.filter(
-                    (item): item is Item => !!item && typeof item === 'object')
-                : [];
-
-            const keys = notifications.map(notification => getItemKey(server.id, notification));
-            const previous = new Set(seen[server.id] ?? []);
-
-            if (!seen[server.id]) {
-                seen[server.id] = keys.slice(-200);
-                continue;
-            }
-
-            const newNotifications = notifications.filter(
-                notification => !previous.has(getItemKey(server.id, notification)));
-
-            if (newNotifications.length > 0) changes.push({ server, notifications: newNotifications });
-            seen[server.id] = Array.from(new Set([...previous, ...keys])).slice(-200);
-        } catch {
-            // 한 서버의 오류가 다른 서버의 확인을 중단시키지 않습니다.
-        }
-    }
-
-    await AsyncStorage.setItem(SEEN_KEY, JSON.stringify(seen));
-    return changes;
-}
-
-async function showSystemNotifications() {
-    if (running) return;
-    running = true;
-    try {
-        const changes = await fetchNewNotifications();
-        for (const { server, notifications } of changes) {
-            const latest = notifications[notifications.length - 1];
-            const picoName = typeof latest?.picoName === 'string' && latest.picoName ? latest.picoName : '센서';
-            const latestMessage = typeof latest?.message === 'string' && latest.message
-                ? latest.message
-                : '새로운 SmartFarm 알림이 도착했습니다.';
-            const body = notifications.length > 1
-                ? `${latestMessage} (새 알림 ${notifications.length}개)`
-                : latestMessage;
-
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: `${server.name} · ${picoName}`,
-                    body,
-                    data: { serverId: server.id, picoId: latest?.picoId ?? null },
-                },
-                trigger: null,
-            });
-        }
-    } finally {
-        running = false;
-    }
-}
-
-TaskManager.defineTask(BACKGROUND_TASK_NAME, async () => {
-    try {
-        await showSystemNotifications();
-        return BackgroundTask.BackgroundTaskResult.Success;
-    } catch {
-        return BackgroundTask.BackgroundTaskResult.Failed;
-    }
-});
-
-async function registerBackgroundTask() {
-    if (Platform.OS === 'web') return;
-    try {
-        const status = await BackgroundTask.getStatusAsync();
-        if (status !== BackgroundTask.BackgroundTaskStatus.Available) return;
-
-        const registered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_TASK_NAME);
-        if (!registered) {
-            await BackgroundTask.registerTaskAsync(BACKGROUND_TASK_NAME, {
-                minimumInterval: BACKGROUND_INTERVAL_MINUTES,
-            });
-        }
-    } catch {
-        // 백그라운드 작업을 사용할 수 없는 환경에서는 foreground polling만 사용합니다.
-    }
+        await fetch(`${base}${DEVICE_REGISTRATION_PATH}`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                ...(apiKey ? { 'X-API-Key': apiKey } : {}),
+            },
+            body: JSON.stringify({
+                token,
+                platform,
+            }),
+        });
+    }));
 }
 
 async function requestNotificationPermissionOnce() {
@@ -177,18 +86,6 @@ async function requestNotificationPermissionOnce() {
     return result.granted;
 }
 
-function startPolling() {
-    if (timer) return;
-    void showSystemNotifications();
-    timer = setInterval(() => { void showSystemNotifications(); }, FOREGROUND_INTERVAL);
-}
-
-function stopPolling() {
-    if (!timer) return;
-    clearInterval(timer);
-    timer = null;
-}
-
 export async function initializeNotificationForeground() {
     if (Platform.OS === 'web') return false;
 
@@ -204,24 +101,27 @@ export async function initializeNotificationForeground() {
     const allowed = await requestNotificationPermissionOnce();
     if (!allowed) return false;
 
-    await registerBackgroundTask();
+    try {
+        const deviceToken = await Notifications.getDevicePushTokenAsync();
+        if (deviceToken.data) {
+            await registerDeviceToken(deviceToken.data, Platform.OS === 'android' ? 'android' : 'ios');
+        }
+    } catch {
+        // FCM/APNs token을 아직 발급할 수 없는 환경에서는 앱 사용을 막지 않습니다.
+    }
+
     return true;
 }
 
-export function startNotificationForegroundPolling() {
-    if (Platform.OS !== 'web' && AppState.currentState === 'active') startPolling();
-}
+export function subscribePushTokenRefresh() {
+    if (Platform.OS === 'web') return () => {};
 
-export function subscribeNotificationForegroundPolling() {
-    const subscription = AppState.addEventListener('change', state => {
-        if (state === 'active') startPolling();
-        else stopPolling();
+    const subscription = Notifications.addPushTokenListener(token => {
+        void registerDeviceToken(
+            token.data,
+            Platform.OS === 'android' ? 'android' : 'ios',
+        );
     });
 
-    if (AppState.currentState === 'active') startPolling();
-
-    return () => {
-        subscription.remove();
-        stopPolling();
-    };
+    return () => subscription.remove();
 }
