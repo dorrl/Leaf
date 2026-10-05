@@ -54,7 +54,6 @@ async function registerDeviceToken(token: string, platform: 'android' | 'ios') {
                 token,
                 platform,
                 serverId: server.id,
-                serverName: server.name,
             }),
         });
     }));
