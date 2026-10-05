@@ -1,7 +1,6 @@
 import {
     initializeNotificationForeground,
-    startNotificationForegroundPolling,
-    subscribeNotificationForegroundPolling,
+    subscribePushTokenRefresh,
 } from '@/services/notificationBackground';
 import { ServerAddressProvider } from '@/hooks/useServerAddress';
 import { ThemeProvider } from '@/hooks/useTheme';
@@ -73,8 +72,7 @@ export default function RootLayout() {
             const allowed = await initializeNotificationForeground();
             if (!active || !allowed) return;
 
-            startNotificationForegroundPolling();
-            unsubscribe = subscribeNotificationForegroundPolling();
+            unsubscribe = subscribePushTokenRefresh();
         })();
 
         return () => {
