@@ -38,7 +38,7 @@ export default function Settings() {
         </View>
         <View style={{ marginTop: 28 }}>
             <Text style={{ fontFamily: 'Pretendard-SemiBold', fontSize: 13, color: c.subText, marginBottom: 8 }}>앱 정보</Text>
-            <Text style={{ fontFamily: 'Pretendard-Medium', fontSize: 13, color: c.main.text }}>Smart Farm · ITEC tech</Text>
+            <Text style={{ fontFamily: 'Pretendard-Medium', fontSize: 13, color: c.main.text }}>LEAF · ITEC tech</Text>
         </View>
         <View style={{marginTop: 5, flexDirection: 'row'}}>
             <AnimatedPressable onPress={() => openURL('https://itec.dorrl.com/')} style={[styles.redirectButton, {backgroundColor: c.main.cover, borderColor: c.main.outline}]}>

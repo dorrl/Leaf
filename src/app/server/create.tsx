@@ -1,7 +1,7 @@
-import { Colors } from '@/constants/Colors';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { BackButton } from '@/components/BackButton';
 import { FormField } from '@/components/FormField';
+import { Colors } from '@/constants/Colors';
 import { useServerAddress } from '@/hooks/useServerAddress';
 import { useTheme } from '@/hooks/useTheme';
 import { useRouter } from 'expo-router';
@@ -35,7 +35,7 @@ export default function CreateServer() {
     return (
         <ScrollView style={{ flex: 1, backgroundColor: c.background }} contentContainerStyle={{ width: '100%', maxWidth: 680, alignSelf: 'center', paddingHorizontal: 16, paddingTop: 14, paddingBottom: 40 }}>
             <View style={{ paddingTop: 2 }}>
-                <BackButton onPress={() => router.back()} color={c.main.text} backgroundColor={isDark ? 'rgba(255,255,255,0.04)' : '#FFFFFF'} />
+                <BackButton onPress={router.back} color={c.main.text} backgroundColor={c.main.cover} borderColor={c.main.outline} />
             </View>
             <Text style={{ fontFamily: 'Pretendard-Bold', fontSize: 25, color: c.main.text, marginTop: 22 }}>서버 추가</Text>
             <Text style={[styles.heading, { color: c.subText, marginTop: 22 }]}>서버 연결</Text>
@@ -48,7 +48,7 @@ export default function CreateServer() {
             <Text style={[styles.heading, { color: c.subText, marginTop: 22 }]}>안내</Text>
             <View style={[styles.card, { backgroundColor: c.main.cover, borderColor: c.main.outline, padding: wide * 4 }]}>
                 <Text style={[styles.guide, { color: c.subText }]}>1. 서버 주소는 포트까지 입력하세요. 예: http://192.168.0.10:3000</Text>
-                <Text style={[styles.guide, { color: c.subText }]}>2. API 키는 서버의 SMARTFARM_API_KEY와 동일해야 설정 변경과 데이터 삭제가 가능합니다.</Text>
+                <Text style={[styles.guide, { color: c.subText }]}>2. API 키는 서버의 LEAF_API_KEY와 동일해야 설정 변경과 데이터 삭제가 가능합니다.</Text>
                 <Text style={[styles.guide, { color: c.subText }]}>3. 최근 센서 상태는 휴대폰에도 저장되어, 연결이 끊겨도 마지막 동기화 값을 확인할 수 있습니다.</Text>
                 <Text style={[styles.guide, { color: c.subText }]}>4. 제출·배포 전 실제 센서 측정, 앱 설정 변경, 서버 저장 파일을 한 번씩 확인하세요.</Text>
             </View>

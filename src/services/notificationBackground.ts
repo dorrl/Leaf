@@ -13,7 +13,7 @@ type Server = { id: string; name: string; address: string };
 
 const getApiKeyStorageKey = (id: string) => {
     const safeId = id.replace(/[^A-Za-z0-9._-]/g, '_');
-    return safeId ? `smartfarm-api-key-${safeId}` : '';
+    return safeId ? `leaf-api-key-${safeId}` : '';
 };
 
 async function loadServers(): Promise<Server[]> {
@@ -70,7 +70,7 @@ async function requestNotificationPermissionOnce() {
 
     if (Platform.OS === 'android') {
         await Notifications.setNotificationChannelAsync(NOTIFICATION_CHANNEL, {
-            name: 'SmartFarm 알림',
+            name: 'Leaf 알림',
             importance: Notifications.AndroidImportance.DEFAULT,
             vibrationPattern: [0, 250],
         });

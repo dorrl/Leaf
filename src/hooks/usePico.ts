@@ -45,7 +45,7 @@ export function usePico() {
         if (!server) throw new Error(`Server not found: ${serverId}`);
 
         const baseUrl = server.address.startsWith('http') ? server.address : `http://${server.address}`;
-        const apiKey = await getServerApiKey(serverId) || process.env.EXPO_PUBLIC_SMARTFARM_API_KEY || '';
+        const apiKey = await getServerApiKey(serverId) || process.env.EXPO_PUBLIC_LEAF_API_KEY || '';
         if (!apiKey) throw new Error('서버 API 키를 먼저 설정하세요.');
         const response = await fetch(`${baseUrl}/picos/${encodeURIComponent(picoId)}/setName`, {
             method: 'POST',
@@ -65,7 +65,7 @@ export function usePico() {
         if (!server) throw new Error(`Server not found: ${serverId}`);
 
         const baseUrl = server.address.startsWith('http') ? server.address : `http://${server.address}`;
-        const apiKey = await getServerApiKey(serverId) || process.env.EXPO_PUBLIC_SMARTFARM_API_KEY || '';
+        const apiKey = await getServerApiKey(serverId) || process.env.EXPO_PUBLIC_LEAF_API_KEY || '';
         if (!apiKey) throw new Error('서버 API 키를 먼저 설정하세요.');
         const response = await fetch(`${baseUrl}/picos/${encodeURIComponent(picoId)}/optimalRange`, {
             method: 'POST',
