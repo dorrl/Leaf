@@ -1,5 +1,5 @@
-import { Colors } from '@/constants/Colors';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
+import { Colors } from '@/constants/Colors';
 import { useTheme } from '@/hooks/useTheme';
 import { AntDesign } from '@expo/vector-icons';
 import { useState } from 'react';
@@ -44,7 +44,7 @@ export default function Settings() {
             <AnimatedPressable onPress={() => openURL('https://itec.dorrl.com/')} style={[styles.redirectButton, {backgroundColor: c.main.cover, borderColor: c.main.outline}]}>
                 <AntDesign name="link" size={30} color={c.main.text} />
             </AnimatedPressable>
-            <AnimatedPressable onPress={() => openURL('https://github.com/dorrl/farmApp')} style={[styles.redirectButton, {backgroundColor: c.main.cover, borderColor: c.main.outline}]}>
+            <AnimatedPressable onPress={() => openURL('https://github.com/dorrl/Leaf')} style={[styles.redirectButton, {backgroundColor: c.main.cover, borderColor: c.main.outline}]}>
                 <AntDesign name="github" size={30} color={c.main.text} />
             </AnimatedPressable>
 
