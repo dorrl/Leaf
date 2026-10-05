@@ -90,11 +90,11 @@ function ServerRuntimeSettings({ server, wide, c }: { server: ServerConfig; wide
 
 function ServerAddressForm({ server, wide, c }: { server: ServerConfig; wide: number; c: typeof Colors.dark }) {
     const { updateServerConfig, getServerApiKey, setServerApiKey } = useServerAddress();
-    const [name, setName] = useState(server.name); const [description, setDescription] = useState(server.description); const [address, setAddress] = useState(server.address); const [apiKey, setApiKey] = useState(''); const [saving, setSaving] = useState(false);
+    const [name, setName] = useState(server.name); const [description, setDescription] = useState(server.description); const [address, setAddress] = useState(server.address); const [apiKey, setApiKey] = useState(''); const [savedApiKey, setSavedApiKey] = useState(''); const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState('');
-    useEffect(() => { void getServerApiKey(server.id).then(setApiKey); }, [server.id, getServerApiKey]);
+    useEffect(() => { void getServerApiKey(server.id).then(key => { setApiKey(key); setSavedApiKey(key); }); }, [server.id, getServerApiKey]);
     const disabled: boolean = 
-        saving || ((server.name === name.trim() && server.description === description.trim() && server.address === address.trim().replace(/\/$/, '')) && !message) ||
+        saving || ((server.name === name.trim() && server.description === description.trim() && server.address === address.trim().replace(/\/$/, '') && savedApiKey === apiKey.trim()) && !message) ||
         name.trim() === '' || address.trim().replace(/\/$/, '') === ''
     return (
         <View>
