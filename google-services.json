@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "346329401227",
+    "project_id": "leaf-66871",
+    "storage_bucket": "leaf-66871.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:346329401227:android:357fd98c073cd61d77918e",
+        "android_client_info": {
+          "package_name": "com.itec.leaf"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBg6ghq8H7fTcSOjNf-vySTfUybuMfjrbs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

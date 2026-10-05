@@ -1,12 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
 import * as Notifications from 'expo-notifications';
+import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 
-const STORAGE_KEY = '@smartfarm/server-configs';
-const PERMISSION_REQUESTED_KEY = '@smartfarm/notification-permission-requested';
-const API_PREFIX = 'smartfarm-api-key-';
-const NOTIFICATION_CHANNEL = 'smartfarm-alerts';
+const STORAGE_KEY = '@leaf/server-configs';
+const PERMISSION_REQUESTED_KEY = '@leaf/notification-permission-requested';
+const API_PREFIX = 'leaf-api-key-';
+const NOTIFICATION_CHANNEL = 'leaf-alerts';
 const DEVICE_REGISTRATION_PATH = '/notifications/device';
 
 type Server = { id: string; name: string; address: string };
