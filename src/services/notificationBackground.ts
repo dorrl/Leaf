@@ -53,6 +53,8 @@ async function registerDeviceToken(token: string, platform: 'android' | 'ios') {
             body: JSON.stringify({
                 token,
                 platform,
+                serverId: server.id,
+                serverName: server.name,
             }),
         });
     }));
