@@ -24,11 +24,11 @@ const ServerAddressContext = createContext<ServerAddressContextType | undefined>
 
 const INITIAL_SERVERS: ServerConfig[] = [];
 
-const STORAGE_KEY = '@smartfarm/server-configs';
+const STORAGE_KEY = '@leaf/server-configs';
 
 const getApiKeyStorageKey = (id: string) => {
     const safeId = id.replace(/[^A-Za-z0-9._-]/g, '_');
-    return safeId ? `smartfarm-api-key-${safeId}` : '';
+    return safeId ? `leaf-api-key-${safeId}` : '';
 };
 
 export function ServerAddressProvider({ children }: { children: React.ReactNode }) {

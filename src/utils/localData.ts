@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const snapshotKey = (serverId: string) => `@smartfarm/state/${serverId}`;
+const snapshotKey = (serverId: string) => `@leaf/state/${serverId}`;
 
 export async function saveServerSnapshot(serverId: string, state: unknown) {
     await AsyncStorage.setItem(snapshotKey(serverId), JSON.stringify({ savedAt: new Date().toISOString(), state }));
